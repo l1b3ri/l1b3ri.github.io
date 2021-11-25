@@ -1,3 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
+  <entry>
+    <title>NXNSAttack:Recursive DNS Inefficiencies and Vulnerabilities</title>
+    <url>/2021/11/26/NXNSAttack/</url>
+    <content><![CDATA[<p>NXNSAttack: Recursive DNS Inefficiencies and Vulnerabilities<br><a href="https://www.usenix.org/conference/usenixsecurity20/presentation/afek">https://www.usenix.org/conference/usenixsecurity20/presentation/afek</a></p>
+<span id="more"></span>
+
+
+
+
+]]></content>
+      <categories>
+        <category>论文</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
 </search>
