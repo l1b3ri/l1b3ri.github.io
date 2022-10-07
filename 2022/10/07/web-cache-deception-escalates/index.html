@@ -1,0 +1,1228 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Web Cache Deception Escalates, hackthebox,ctf,渗透">
+    <meta name="description" content="Web Cache Deception Escalatesweb Cache攻击前置知识：
+https://websec.readthedocs.io/zh/latest/vuln/webcache.html
+这种攻击类似于RPO（Rela">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Web Cache Deception Escalates | l1b3r&#39;s blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+
+
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/css/my.css">
+<link rel="stylesheet" type="text/css" href="/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/css/reward.css">
+    
+
+
+
+    <script src="/libs/jquery/jquery-3.6.0.min.js"></script>
+
+<meta name="generator" content="Hexo 5.4.2">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">l1b3r&#39;s blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">l1b3r&#39;s blog</div>
+        <div class="logo-desc">
+            
+            高贵的灵魂是自己尊敬自己
+            
+        </div>
+    </div>
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Web Cache Deception Escalates</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                                <span class="chip bg-color">博客</span>
+                            </a>
+                        
+                            <a href="/tags/hexo/">
+                                <span class="chip bg-color">hexo</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/%E8%AE%BA%E6%96%87/" class="post-category">
+                                论文
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2022-10-07
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+        <!-- 是否加载使用自带的 prismjs. -->
+        <link rel="stylesheet" href="/libs/prism/prism.min.css">
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Web-Cache-Deception-Escalates"><a href="#Web-Cache-Deception-Escalates" class="headerlink" title="Web Cache Deception Escalates"></a>Web Cache Deception Escalates</h1><p>web Cache攻击前置知识：</p>
+<p><a target="_blank" rel="noopener" href="https://websec.readthedocs.io/zh/latest/vuln/webcache.html">https://websec.readthedocs.io/zh/latest/vuln/webcache.html</a></p>
+<p>这种攻击类似于RPO（Relative Rath Overwrite）相对路径覆盖：</p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/166731.html"></a></p>
+<p><a target="_blank" rel="noopener" href="https://www.notion.so/HTTP-4aaae20b6d8141f390ad4834f6fb84d6">HTTPS请求走私</a>(HTTP request smuggling, HRS)</p>
+<p>主要影响的是CDN，负载均衡，反向代理</p>
+<h2 id="Usenix2022"><a href="#Usenix2022" class="headerlink" title="Usenix2022"></a>Usenix2022</h2><p>Web Cache Deception Escalates，原文地址如下:</p>
+<p><a target="_blank" rel="noopener" href="https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari">https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari</a></p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>传统的WCD</p>
+<p>（Omer Gile blackhat 2017）</p>
+<p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=mroq9eHFOIU">Web Cache Deception Attack</a></p>
+<p>（USENIX Security 2020 paper title “Cached and Confused: Web Cache Deception in the Wild”）具有两个局限性</p>
+<p><a target="_blank" rel="noopener" href="https://securitygossip.com/blog/2020/04/07/cached-and-confused-web-cache-deception-in-the-wild/">Cached and Confused Web Cache Deception in the Wild - Group of Software Security In Progress</a></p>
+<p>1.It cannot probe websites that do not present avenues for marker injection or reﬂection.</p>
+<p>1.它不能探测那些没有标记注入或反射渠道的网站</p>
+<p>2.Marker setup is a burdensome process, making large-scale measurements infeasible.</p>
+<p>2.建立标记是一个繁琐的过程，似的大规模的标记不可行</p>
+<h2 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h2><p>传统的方法只能调查一些对身份验证后门保护的用户提供的个人信息的攻击，但这种方法的局限性在于：</p>
+<p>1.不能测试没有用户输入的页面，因为没有一个注入的途径。另外在不需要身份验证的页面中或者不支持创建用户的网站上，存在许多的安全信息（CSRF tokens，CSP nonces， OAuth state parameters）这种时候，现有的一些方法无法检测这些网站，因此更无法测试可能包含的WCD漏洞。</p>
+<p>2.给予标记的检测方法需要在每个测试的网站上去创建和填充用户账户，这是一个很大的工作量，会给实验带来很大的障碍。</p>
+<p>In this paper, we set out to propose a WCD detection methodology that is not hindered by the attack surface coverage and scalability limitations of the previous work. We subsequently aim to gain new insights into the severity and spread of WCD attacks.</p>
+<h3 id="新方法："><a href="#新方法：" class="headerlink" title="新方法："></a>新方法：</h3><p>使用内容相似度检查和启发式HTTP相应头来代替标记。这代表可以不用进行手动标记</p>
+<h3 id="贡献："><a href="#贡献：" class="headerlink" title="贡献："></a>贡献：</h3><ul>
+<li>We present a novel methodology DE to detect WCD vulnerabilities. DE addresses the coverage and scalability limitations of the state-of-the-art approach for detecting WCD in the wild.</li>
+<li>We conduct a comparative experiment on 404 websites, evaluating the pros and cons of   different WCD detection methodologies. We show that our approach DE significantly outperforms CC.</li>
+<li>We perform the largest-scale measurement experiment to date for detecting WCD in the wild, testing 10K websites. We identify 1188 vulnerable websites.</li>
+<li>We discuss case studies on real-life vulnerabilities impacting high-profile websites, presenting evidence for the first time that WCD attacks pose a serious threat beyond leaking personal information.</li>
+</ul>
+<h2 id="Cached-and-Confused-CC"><a href="#Cached-and-Confused-CC" class="headerlink" title="Cached and Confused(CC)"></a>Cached and Confused(CC)</h2><p>在USENIX Security 2020 的文章 “Cached and Confused: Web Cache Deception in the Wild”中提出的WCD检测方法如下：</p>
+<ol>
+<li>测试人员在网站上创建一个账户，并使用唯一标记填充用户可编辑的字段，这些字段通常包含个人或一些敏感信息</li>
+<li>带有有效身份验证Cookie的爬虫使用WCD漏洞测试网站的页面。此爬虫模拟登陆的受害者点击包含WCD payload的URL</li>
+<li>第二个爬虫不对站点进行身份验证，请求上一步中受害者的相同页面，此爬虫模拟攻击者探测成功的漏洞。如果响应中包含标记，则上一步中的漏洞之一被成功的将缓存存到存储页中，将信息暴露给未经身份验证的请求</li>
+</ol>
+<p>CC的限制：当被测试的页面不反应用户输入（标记）时CC对网站的缓存不具有可见性。甚至一些网站可能不存在标记注入的途径。因此CC是放弃了一些检测漏洞的机会，以确保在有标记的页面上获得更可靠的结果。</p>
+<h2 id="Author-Motivation-amp-Goals"><a href="#Author-Motivation-amp-Goals" class="headerlink" title="Author Motivation &amp; Goals"></a>Author Motivation &amp; Goals</h2><p>本篇文章主要研究之前的局限性。提出了一种新的检测方法：Web Cache Deception Escalates(DE)，这种方法主要解决了以下限制：</p>
+<ol>
+<li>覆盖问题(Coverage Problem)。CC不能测试不反映标记的网页</li>
+<li>可扩展性问题(Scalability Problem)。CC需要手动创建账户，标记等一系列的先决条件，人工成本较大</li>
+</ol>
+<p>Q1: DE方法如何实现，与CC方法的相对表现如何？</p>
+<p>Q2:将测量范围扩大到10K网站将如何改变我们对WCD的既定理解？</p>
+<p>Q3:WCD除了泄漏个人信息外还有什么？错误的缓存其他类型的敏感数据，特别是在那些公共页面上发现的不受身份验证保护的数据是否可行？</p>
+<p>Web cache poisoning</p>
+<p>a set of such attacks on popular caching proxies , and more recently introduced more advanced attacks exploiting the cache key construction mechanisms used by these technologies</p>
+<p>Nguyen et al. proposed a different take on cache poisoning, employing erroneous negative caching (i.e., caching of error responses) as a means to block access to websites, resulting in a denial-of-service attack</p>
+<p>目前还没有普遍适用的缓存攻击或检测防御</p>
+<h2 id="Methodology"><a href="#Methodology" class="headerlink" title="Methodology"></a>Methodology</h2><p>DE使用内容相似度检查和标题检查相结合来克服CC的局限性。但是DE可能不如CC直观</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.07.18.png" alt="截屏2022-09-11 17.07.18.png"></p>
+<h3 id="step-1-检查URL是否返回动态内容？"><a href="#step-1-检查URL是否返回动态内容？" class="headerlink" title="step 1 检查URL是否返回动态内容？"></a>step 1 检查URL是否返回动态内容？</h3><p>WCD的前提是诱使缓存存储动态生成的内容，因为静态页面不太可能包含敏感数据。因此，作为第一步，我们请求两次URL，每一次都有一个新的客户机状态，并比较响应。如果结果相同，我们认为这是一个静态页面，终止程序，否则进行step 2</p>
+<h3 id="step-2-当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？"><a href="#step-2-当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？" class="headerlink" title="step 2 当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？"></a>step 2 当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？</h3><p>step2是通过使用WCD有效负载修改输入URL来创建攻击URL，并请求它来发起WCD攻击。</p>
+<ol>
+<li>向URL去追加一个PATH组件，它指向一个不存在的样式表。我们将文件名随机化，以防止Internet用户无意间访问相同的URL并获取中毒的缓存内容。作者在payload中仍然使用了CSS扩展。（虽然其他静态文件扩展名也可以工作，但是几乎所有网站都存在样式表，这使它成为了WCD攻击的首选）</li>
+<li>通过请求这个URL，模拟受害者访问该链接，进行WCD尝试。这里主要考虑的问题是确保服务器仍然用动态内容相应请求。eg：如果攻击失败，服务器一般会返回错误页（404，400）。为了解决这个问题，作者生成两个具有随机有效负载的唯一攻击URL，发起两次攻击（6，7）行并比较结果（第8行），如果结果相同，则表示攻击失败，终止测试。</li>
+</ol>
+<h3 id="step-3-攻击URL的源相应是否可缓存"><a href="#step-3-攻击URL的源相应是否可缓存" class="headerlink" title="step 3 攻击URL的源相应是否可缓存"></a>step 3 攻击URL的源相应是否可缓存</h3><p>WCD想要成功，源服务器必须提供一个错误的缓存的动态响应。进一步说，但对相同攻击的URL的进一步请求必须从缓存中提供。</p>
+<p>在最后一步中，我们通过检查首次访问攻击URL时返回的HTTP相应（第6行）和对同一URL的重复请求的响应（第9行）来精确执行此检查。具体来说就是执行了两次检查。首先我们使用HTTP相应头启发式来验证初始请求时缓存但未命中（它是由原始请求提供的），但后一个请求是缓存命中（第8行和第10行）接下来比较响应体，已验证这两个请求是否相同（第10行第一个条件），主要是保证正确性。</p>
+<h2 id="Interpreting-the-Results"><a href="#Interpreting-the-Results" class="headerlink" title="Interpreting the Results"></a>Interpreting the Results</h2><p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.36.15.png" alt="截屏2022-09-11 17.36.15.png"></p>
+<p>不一定必须是用户的标记，在一些非敏感页面，包括一些日期，服务器响应时间或电子邮件混淆字符串的动态部分</p>
+<p>但是，动态页面也有可能会被网站管理员配置为可缓存。即使正常请求时，页面也可能会被缓存，而不会收到WCD攻击。这可能是由于一些服务器的优化。例如，可以允许一些不敏感的动态对象中从缓存提供服务，例如一个短TTL，即使他已经超时了。</p>
+<p>DE相比于CC的一个优势是他可以进行假阳性的自动识别和删除，而不需要人工分析</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.43.24.png" alt="截屏2022-09-11 17.43.24.png"></p>
+<p>将每一个URL都视为易受攻击，通常会请求它两次，而不使用WCD邮箱负载，并用相同的请求头来测试第二个响应是否来自缓存。缓存命中意味着在没有攻击时URL仍然被缓存，因此是假阳性。</p>
+<h2 id="DE-with-Authentication"><a href="#DE-with-Authentication" class="headerlink" title="DE with Authentication"></a>DE with Authentication</h2><p>DE不能访问身份验证后的页面，而CC是专门用来测试这些页面。为了研究协议变化和认证状态对WCD检测效率的影响，引入了第三种方法，称为 $DE_{auth}$</p>
+<p>$DE_{auth}$是DE和CC的混合方法。核心使用了新的监测方案，但和CC一样需要手动创建账户，在算法1的6，7行使用有效身份验证的cookie，模拟登录的受害者点击恶意链接。</p>
+<h2 id="The-Experiment"><a href="#The-Experiment" class="headerlink" title="The Experiment"></a>The Experiment</h2><p>在每个FQDN上测试了500个url，使用不同的WCD payload，用12个attack url 测试每个页面，4种路径混淆技术，提出了利用URL编码差异进一步设计了7个新的编码技巧。</p>
+<p>在Alexa Top 100k中提取了404个网站爬行池，选择这些目标是由于CC的标记要求限制，遵循了Cached and Confused中描述的协议。</p>
+<ol>
+<li>抓取Alexa Top 100K 的首页，通过搜索包含关键词（如登录注册）和OAuth &amp; OpenID链接参数</li>
+<li>手动过滤需要敏感凭据的网站，如需要银行账户或社会安全码来创建账户</li>
+<li>得到404个网站，在上面创建账户并标记注入用户的可编辑字段，并为每个字段收集了CC和$DE_{auth}$使用的cookie</li>
+</ol>
+<p>这个过程一定会产生一个和CC编码相同的数据集，但对分析没有实质性的影响</p>
+<p>实践中，爬虫经常会在每个目标网站上发现多个易受攻击的URL，但是如果不对每个发现进行手动分析，我们就无法准确的确定这些漏洞是否真正源于不同的缓存配置问题，或者不同的URL是否实际上对应唯一的页面</p>
+<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>在404个网站中检测到了123个易受WCD攻击的网站</p>
+<p>通过实验我们发现之前CC的限制，尽管数据集已经很偏向必须支持标记注入的网站，但许多其他易受攻击的页面没有反映这些标记。事实上CC只能测试244/404个网站，结果CC在我们的实验中只识别了18个易受攻击的网站，而$DE_{auth}$和DE分别识别了115和104个。 $DE_{auth}$的表现更好一些。</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_19.57.51.png" alt="截屏2022-09-11 19.57.51.png"></p>
+<p>如作者所预料，$DE_{auth}$和DE的差异正式由于身份验证导致的。例如手动确认$DE_{auth}$检测到的目标网站上有漏洞的计费设置页面，但在测试相同URL时，DE被重定向到安全登录页面。同样，CC发现了7个由于访问了经过身份验证页面而DE未检测到的漏洞。另外CC捕获到了两个独特的漏洞，即使是$DE_{auth}$也漏掉了这两个漏洞。证实其中一个案例是由于目标网站没有返回缓存状态头而失败。</p>
+<p>最后$DE_{auth}$发现了5个独特的漏洞，都是没有经过身份验证的，经过验证这些情况是由于网站在向请求附加cookie时显示发送阻止缓存的缓存控制头，或悄悄忽略了所有缓存指令</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_20.18.47.png" alt="截屏2022-09-11 20.18.47.png"></p>
+<p>CC的误报：一个网站如果公开列出了他最近的访问者，其中一个是我们标记的用户名，将会误报</p>
+<p>DE是大规模检测的唯一可行选择，具有良好的检测性能和零设置开销。</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_21.05.37.png" alt="截屏2022-09-11 21.05.37.png"></p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_21.06.50.png" alt="截屏2022-09-11 21.06.50.png"></p>
+<p>WCD+XSS可能导致前置缓存将响应与XSS payload一起存储，这会将攻击升级到stored XSS，此时注入的恶意payload将自动从缓存提供给访问网站的客户端</p>
+<h3 id="供应链攻击"><a href="#供应链攻击" class="headerlink" title="供应链攻击"></a>供应链攻击</h3><p>供应链攻击不局限于传统的恶意代码包含，单个具有缓存风险的易受攻击的在线服务提供商可能将许多网站暴露在互联网上导致WCD攻击，在结果中发现了大量的易受攻击的URL，它们共享相同的子域和相似的路径组件（eg: support.example.com/common-pattern）经过人工检查，确定这些页面是与流行的客户服务和支持管理平台的集成点。由于供应商平台存在WCD漏洞，他们许多客户也在各自的域下受到影响。在1188个网站中有399个明确表示受到该漏洞的影响。</p>
+<p>WCD攻击不能升级为破坏性攻击的原因：</p>
+<p>充分分析了24个网站，但没有对攻击者有价值的数据。另外是个网站不允许探索整个应用程序，要么不允许建立公共账户，要么需要私人信息来进行。只有三个网站泄漏了敏感令牌但这本身并不构成重大威胁。例如CSRF攻击由于对推荐人检查和验证码的分层防御被阻止，CSP nonce泄漏因为没有XSS漏洞而无法利用。2个网站通过浏览器端的API提取敏感数据，因此没有缓存任何损坏。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><strong>Browser-Powered Desync Attacks: A New Frontier in HTTP Request Smuggling</strong></p>
+<p>blackhat 2022</p>
+<p><a target="_blank" rel="noopener" href="https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414">https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414</a></p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/about" rel="external nofollow noreferrer">l1b3r</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://l1b3r.github.io/2022/10/07/web-cache-deception-escalates/">https://l1b3r.github.io/2022/10/07/web-cache-deception-escalates/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/about" target="_blank">l1b3r</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                                    <span class="chip bg-color">博客</span>
+                                </a>
+                            
+                                <a href="/tags/hexo/">
+                                    <span class="chip bg-color">hexo</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.jpg" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2022/10/07/web-cache-deception-escalates/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Web Cache Deception Escalates">
+                        
+                        <span class="card-title">Web Cache Deception Escalates</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E8%AE%BA%E6%96%87/" class="post-category">
+                                    论文
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                        <span class="chip bg-color">博客</span>
+                    </a>
+                    
+                    <a href="/tags/hexo/">
+                        <span class="chip bg-color">hexo</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2022/10/07/htb-opensource/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="HTB-OpenSource">
+                        
+                        <span class="card-title">HTB-OpenSource</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Here's something encrypted, password is required to continue reading.
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/HTB/" class="post-category">
+                                    HTB
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                        <span class="chip bg-color">博客</span>
+                    </a>
+                    
+                    <a href="/tags/hexo/">
+                        <span class="chip bg-color">hexo</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/libs/prism/prism.min.js"></script>
+
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/libs/aplayer/APlayer.min.js"></script>
+<script src="/libs/aplayer/Meting.min.js"></script>
+
+    
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2021-2022</span>
+            
+            <a href="/about" target="_blank">l1b3r</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/l1b3ri" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:244004036@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=244004036" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 244004036" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    
+
+    
+        
+        <script type="text/javascript">
+            // 只在桌面版网页启用特效
+            var windowWidth = $(window).width();
+            if (windowWidth > 768) {
+                document.write('<script type="text/javascript" src="/libs/others/sakura.js"><\/script>');
+            }
+        </script>
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/haru01.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+
+</html>

@@ -99,4 +99,107 @@ docker-compose up -d<span aria-hidden="true" class="line-numbers-rows"><span></s
         <tag>hexo</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Web Cache Deception Escalates</title>
+    <url>/2022/10/07/web-cache-deception-escalates/</url>
+    <content><![CDATA[<h1 id="Web-Cache-Deception-Escalates"><a href="#Web-Cache-Deception-Escalates" class="headerlink" title="Web Cache Deception Escalates"></a>Web Cache Deception Escalates</h1><p>web Cache攻击前置知识：</p>
+<p><a href="https://websec.readthedocs.io/zh/latest/vuln/webcache.html">https://websec.readthedocs.io/zh/latest/vuln/webcache.html</a></p>
+<p>这种攻击类似于RPO（Relative Rath Overwrite）相对路径覆盖：</p>
+<p><a href="https://www.freebuf.com/articles/web/166731.html"></a></p>
+<p><a href="https://www.notion.so/HTTP-4aaae20b6d8141f390ad4834f6fb84d6">HTTPS请求走私</a>(HTTP request smuggling, HRS)</p>
+<p>主要影响的是CDN，负载均衡，反向代理</p>
+<h2 id="Usenix2022"><a href="#Usenix2022" class="headerlink" title="Usenix2022"></a>Usenix2022</h2><p>Web Cache Deception Escalates，原文地址如下:</p>
+<p><a href="https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari">https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari</a></p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>传统的WCD</p>
+<p>（Omer Gile blackhat 2017）</p>
+<p><a href="https://www.youtube.com/watch?v=mroq9eHFOIU">Web Cache Deception Attack</a></p>
+<p>（USENIX Security 2020 paper title “Cached and Confused: Web Cache Deception in the Wild”）具有两个局限性</p>
+<p><a href="https://securitygossip.com/blog/2020/04/07/cached-and-confused-web-cache-deception-in-the-wild/">Cached and Confused Web Cache Deception in the Wild - Group of Software Security In Progress</a></p>
+<p>1.It cannot probe websites that do not present avenues for marker injection or reﬂection.</p>
+<p>1.它不能探测那些没有标记注入或反射渠道的网站</p>
+<p>2.Marker setup is a burdensome process, making large-scale measurements infeasible.</p>
+<p>2.建立标记是一个繁琐的过程，似的大规模的标记不可行</p>
+<h2 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h2><p>传统的方法只能调查一些对身份验证后门保护的用户提供的个人信息的攻击，但这种方法的局限性在于：</p>
+<p>1.不能测试没有用户输入的页面，因为没有一个注入的途径。另外在不需要身份验证的页面中或者不支持创建用户的网站上，存在许多的安全信息（CSRF tokens，CSP nonces， OAuth state parameters）这种时候，现有的一些方法无法检测这些网站，因此更无法测试可能包含的WCD漏洞。</p>
+<p>2.给予标记的检测方法需要在每个测试的网站上去创建和填充用户账户，这是一个很大的工作量，会给实验带来很大的障碍。</p>
+<p>In this paper, we set out to propose a WCD detection methodology that is not hindered by the attack surface coverage and scalability limitations of the previous work. We subsequently aim to gain new insights into the severity and spread of WCD attacks.</p>
+<h3 id="新方法："><a href="#新方法：" class="headerlink" title="新方法："></a>新方法：</h3><p>使用内容相似度检查和启发式HTTP相应头来代替标记。这代表可以不用进行手动标记</p>
+<h3 id="贡献："><a href="#贡献：" class="headerlink" title="贡献："></a>贡献：</h3><ul>
+<li>We present a novel methodology DE to detect WCD vulnerabilities. DE addresses the coverage and scalability limitations of the state-of-the-art approach for detecting WCD in the wild.</li>
+<li>We conduct a comparative experiment on 404 websites, evaluating the pros and cons of   different WCD detection methodologies. We show that our approach DE significantly outperforms CC.</li>
+<li>We perform the largest-scale measurement experiment to date for detecting WCD in the wild, testing 10K websites. We identify 1188 vulnerable websites.</li>
+<li>We discuss case studies on real-life vulnerabilities impacting high-profile websites, presenting evidence for the first time that WCD attacks pose a serious threat beyond leaking personal information.</li>
+</ul>
+<h2 id="Cached-and-Confused-CC"><a href="#Cached-and-Confused-CC" class="headerlink" title="Cached and Confused(CC)"></a>Cached and Confused(CC)</h2><p>在USENIX Security 2020 的文章 “Cached and Confused: Web Cache Deception in the Wild”中提出的WCD检测方法如下：</p>
+<ol>
+<li>测试人员在网站上创建一个账户，并使用唯一标记填充用户可编辑的字段，这些字段通常包含个人或一些敏感信息</li>
+<li>带有有效身份验证Cookie的爬虫使用WCD漏洞测试网站的页面。此爬虫模拟登陆的受害者点击包含WCD payload的URL</li>
+<li>第二个爬虫不对站点进行身份验证，请求上一步中受害者的相同页面，此爬虫模拟攻击者探测成功的漏洞。如果响应中包含标记，则上一步中的漏洞之一被成功的将缓存存到存储页中，将信息暴露给未经身份验证的请求</li>
+</ol>
+<p>CC的限制：当被测试的页面不反应用户输入（标记）时CC对网站的缓存不具有可见性。甚至一些网站可能不存在标记注入的途径。因此CC是放弃了一些检测漏洞的机会，以确保在有标记的页面上获得更可靠的结果。</p>
+<h2 id="Author-Motivation-amp-Goals"><a href="#Author-Motivation-amp-Goals" class="headerlink" title="Author Motivation &amp; Goals"></a>Author Motivation &amp; Goals</h2><p>本篇文章主要研究之前的局限性。提出了一种新的检测方法：Web Cache Deception Escalates(DE)，这种方法主要解决了以下限制：</p>
+<ol>
+<li>覆盖问题(Coverage Problem)。CC不能测试不反映标记的网页</li>
+<li>可扩展性问题(Scalability Problem)。CC需要手动创建账户，标记等一系列的先决条件，人工成本较大</li>
+</ol>
+<p>Q1: DE方法如何实现，与CC方法的相对表现如何？</p>
+<p>Q2:将测量范围扩大到10K网站将如何改变我们对WCD的既定理解？</p>
+<p>Q3:WCD除了泄漏个人信息外还有什么？错误的缓存其他类型的敏感数据，特别是在那些公共页面上发现的不受身份验证保护的数据是否可行？</p>
+<p>Web cache poisoning</p>
+<p>a set of such attacks on popular caching proxies , and more recently introduced more advanced attacks exploiting the cache key construction mechanisms used by these technologies</p>
+<p>Nguyen et al. proposed a different take on cache poisoning, employing erroneous negative caching (i.e., caching of error responses) as a means to block access to websites, resulting in a denial-of-service attack</p>
+<p>目前还没有普遍适用的缓存攻击或检测防御</p>
+<h2 id="Methodology"><a href="#Methodology" class="headerlink" title="Methodology"></a>Methodology</h2><p>DE使用内容相似度检查和标题检查相结合来克服CC的局限性。但是DE可能不如CC直观</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.07.18.png" alt="截屏2022-09-11 17.07.18.png"></p>
+<h3 id="step-1-检查URL是否返回动态内容？"><a href="#step-1-检查URL是否返回动态内容？" class="headerlink" title="step 1 检查URL是否返回动态内容？"></a>step 1 检查URL是否返回动态内容？</h3><p>WCD的前提是诱使缓存存储动态生成的内容，因为静态页面不太可能包含敏感数据。因此，作为第一步，我们请求两次URL，每一次都有一个新的客户机状态，并比较响应。如果结果相同，我们认为这是一个静态页面，终止程序，否则进行step 2</p>
+<h3 id="step-2-当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？"><a href="#step-2-当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？" class="headerlink" title="step 2 当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？"></a>step 2 当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？</h3><p>step2是通过使用WCD有效负载修改输入URL来创建攻击URL，并请求它来发起WCD攻击。</p>
+<ol>
+<li>向URL去追加一个PATH组件，它指向一个不存在的样式表。我们将文件名随机化，以防止Internet用户无意间访问相同的URL并获取中毒的缓存内容。作者在payload中仍然使用了CSS扩展。（虽然其他静态文件扩展名也可以工作，但是几乎所有网站都存在样式表，这使它成为了WCD攻击的首选）</li>
+<li>通过请求这个URL，模拟受害者访问该链接，进行WCD尝试。这里主要考虑的问题是确保服务器仍然用动态内容相应请求。eg：如果攻击失败，服务器一般会返回错误页（404，400）。为了解决这个问题，作者生成两个具有随机有效负载的唯一攻击URL，发起两次攻击（6，7）行并比较结果（第8行），如果结果相同，则表示攻击失败，终止测试。</li>
+</ol>
+<h3 id="step-3-攻击URL的源相应是否可缓存"><a href="#step-3-攻击URL的源相应是否可缓存" class="headerlink" title="step 3 攻击URL的源相应是否可缓存"></a>step 3 攻击URL的源相应是否可缓存</h3><p>WCD想要成功，源服务器必须提供一个错误的缓存的动态响应。进一步说，但对相同攻击的URL的进一步请求必须从缓存中提供。</p>
+<p>在最后一步中，我们通过检查首次访问攻击URL时返回的HTTP相应（第6行）和对同一URL的重复请求的响应（第9行）来精确执行此检查。具体来说就是执行了两次检查。首先我们使用HTTP相应头启发式来验证初始请求时缓存但未命中（它是由原始请求提供的），但后一个请求是缓存命中（第8行和第10行）接下来比较响应体，已验证这两个请求是否相同（第10行第一个条件），主要是保证正确性。</p>
+<h2 id="Interpreting-the-Results"><a href="#Interpreting-the-Results" class="headerlink" title="Interpreting the Results"></a>Interpreting the Results</h2><p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.36.15.png" alt="截屏2022-09-11 17.36.15.png"></p>
+<p>不一定必须是用户的标记，在一些非敏感页面，包括一些日期，服务器响应时间或电子邮件混淆字符串的动态部分</p>
+<p>但是，动态页面也有可能会被网站管理员配置为可缓存。即使正常请求时，页面也可能会被缓存，而不会收到WCD攻击。这可能是由于一些服务器的优化。例如，可以允许一些不敏感的动态对象中从缓存提供服务，例如一个短TTL，即使他已经超时了。</p>
+<p>DE相比于CC的一个优势是他可以进行假阳性的自动识别和删除，而不需要人工分析</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.43.24.png" alt="截屏2022-09-11 17.43.24.png"></p>
+<p>将每一个URL都视为易受攻击，通常会请求它两次，而不使用WCD邮箱负载，并用相同的请求头来测试第二个响应是否来自缓存。缓存命中意味着在没有攻击时URL仍然被缓存，因此是假阳性。</p>
+<h2 id="DE-with-Authentication"><a href="#DE-with-Authentication" class="headerlink" title="DE with Authentication"></a>DE with Authentication</h2><p>DE不能访问身份验证后的页面，而CC是专门用来测试这些页面。为了研究协议变化和认证状态对WCD检测效率的影响，引入了第三种方法，称为 $DE_{auth}$</p>
+<p>$DE_{auth}$是DE和CC的混合方法。核心使用了新的监测方案，但和CC一样需要手动创建账户，在算法1的6，7行使用有效身份验证的cookie，模拟登录的受害者点击恶意链接。</p>
+<h2 id="The-Experiment"><a href="#The-Experiment" class="headerlink" title="The Experiment"></a>The Experiment</h2><p>在每个FQDN上测试了500个url，使用不同的WCD payload，用12个attack url 测试每个页面，4种路径混淆技术，提出了利用URL编码差异进一步设计了7个新的编码技巧。</p>
+<p>在Alexa Top 100k中提取了404个网站爬行池，选择这些目标是由于CC的标记要求限制，遵循了Cached and Confused中描述的协议。</p>
+<ol>
+<li>抓取Alexa Top 100K 的首页，通过搜索包含关键词（如登录注册）和OAuth &amp; OpenID链接参数</li>
+<li>手动过滤需要敏感凭据的网站，如需要银行账户或社会安全码来创建账户</li>
+<li>得到404个网站，在上面创建账户并标记注入用户的可编辑字段，并为每个字段收集了CC和$DE_{auth}$使用的cookie</li>
+</ol>
+<p>这个过程一定会产生一个和CC编码相同的数据集，但对分析没有实质性的影响</p>
+<p>实践中，爬虫经常会在每个目标网站上发现多个易受攻击的URL，但是如果不对每个发现进行手动分析，我们就无法准确的确定这些漏洞是否真正源于不同的缓存配置问题，或者不同的URL是否实际上对应唯一的页面</p>
+<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>在404个网站中检测到了123个易受WCD攻击的网站</p>
+<p>通过实验我们发现之前CC的限制，尽管数据集已经很偏向必须支持标记注入的网站，但许多其他易受攻击的页面没有反映这些标记。事实上CC只能测试244/404个网站，结果CC在我们的实验中只识别了18个易受攻击的网站，而$DE_{auth}$和DE分别识别了115和104个。 $DE_{auth}$的表现更好一些。</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_19.57.51.png" alt="截屏2022-09-11 19.57.51.png"></p>
+<p>如作者所预料，$DE_{auth}$和DE的差异正式由于身份验证导致的。例如手动确认$DE_{auth}$检测到的目标网站上有漏洞的计费设置页面，但在测试相同URL时，DE被重定向到安全登录页面。同样，CC发现了7个由于访问了经过身份验证页面而DE未检测到的漏洞。另外CC捕获到了两个独特的漏洞，即使是$DE_{auth}$也漏掉了这两个漏洞。证实其中一个案例是由于目标网站没有返回缓存状态头而失败。</p>
+<p>最后$DE_{auth}$发现了5个独特的漏洞，都是没有经过身份验证的，经过验证这些情况是由于网站在向请求附加cookie时显示发送阻止缓存的缓存控制头，或悄悄忽略了所有缓存指令</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_20.18.47.png" alt="截屏2022-09-11 20.18.47.png"></p>
+<p>CC的误报：一个网站如果公开列出了他最近的访问者，其中一个是我们标记的用户名，将会误报</p>
+<p>DE是大规模检测的唯一可行选择，具有良好的检测性能和零设置开销。</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_21.05.37.png" alt="截屏2022-09-11 21.05.37.png"></p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_21.06.50.png" alt="截屏2022-09-11 21.06.50.png"></p>
+<p>WCD+XSS可能导致前置缓存将响应与XSS payload一起存储，这会将攻击升级到stored XSS，此时注入的恶意payload将自动从缓存提供给访问网站的客户端</p>
+<h3 id="供应链攻击"><a href="#供应链攻击" class="headerlink" title="供应链攻击"></a>供应链攻击</h3><p>供应链攻击不局限于传统的恶意代码包含，单个具有缓存风险的易受攻击的在线服务提供商可能将许多网站暴露在互联网上导致WCD攻击，在结果中发现了大量的易受攻击的URL，它们共享相同的子域和相似的路径组件（eg: support.example.com/common-pattern）经过人工检查，确定这些页面是与流行的客户服务和支持管理平台的集成点。由于供应商平台存在WCD漏洞，他们许多客户也在各自的域下受到影响。在1188个网站中有399个明确表示受到该漏洞的影响。</p>
+<p>WCD攻击不能升级为破坏性攻击的原因：</p>
+<p>充分分析了24个网站，但没有对攻击者有价值的数据。另外是个网站不允许探索整个应用程序，要么不允许建立公共账户，要么需要私人信息来进行。只有三个网站泄漏了敏感令牌但这本身并不构成重大威胁。例如CSRF攻击由于对推荐人检查和验证码的分层防御被阻止，CSP nonce泄漏因为没有XSS漏洞而无法利用。2个网站通过浏览器端的API提取敏感数据，因此没有缓存任何损坏。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><strong>Browser-Powered Desync Attacks: A New Frontier in HTTP Request Smuggling</strong></p>
+<p>blackhat 2022</p>
+<p><a href="https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414">https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414</a></p>
+]]></content>
+      <categories>
+        <category>论文</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
 </search>
