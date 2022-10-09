@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CC6</title>
+    <url>/2022/10/07/cc6/</url>
+    <content><![CDATA[<h1 id="CC6"><a href="#CC6" class="headerlink" title="CC6"></a>CC6</h1><p>相较于CC1而言，CC6适用于java版本高于8u71，前面的执行方法与CC1类似，主要是用了Transformer.transform</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">/*
+	Gadget chain:
+	    java.io.ObjectInputStream.readObject()
+            java.util.HashSet.readObject()
+                java.util.HashMap.put()
+                java.util.HashMap.hash()
+                    org.apache.commons.collections.keyvalue.TiedMapEntry.hashCode()
+                    org.apache.commons.collections.keyvalue.TiedMapEntry.getValue()
+//以下为CC6利用链，以上为CC1共同部分
+                        org.apache.commons.collections.map.LazyMap.get()
+                            org.apache.commons.collections.functors.ChainedTransformer.transform()
+                            org.apache.commons.collections.functors.InvokerTransformer.transform()
+                            java.lang.reflect.Method.invoke()
+                                java.lang.Runtime.exec()
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/07/cc6/%E6%88%AA%E5%B1%8F2022-05-28_21.16.11.png" alt="截屏2022-05-28 21.16.11.png"></p>
+]]></content>
+      <categories>
+        <category>Java代码审计</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CC1</title>
     <url>/2022/10/07/cc1/</url>
     <content><![CDATA[<h1 id="CC1"><a href="#CC1" class="headerlink" title="CC1"></a>CC1</h1><p>commons-collections包为Java标准的<code>Collections API</code>提供了相当好的补充。在此基础上对其常用的数据结构操作进行了很好的封装、抽象和补充。让我们在开发应用程序的过程中，既保证了性能，同时也能大大简化代码。</p>
@@ -87,141 +117,6 @@ chainedTransformer<span class="token punctuation">.</span><span class="token fun
         <span class="token function">unserialize</span><span class="token punctuation">(</span><span class="token string">"ysoser.bin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
       <categories>
         <category>Java代码审计</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CC6</title>
-    <url>/2022/10/07/cc6/</url>
-    <content><![CDATA[<h1 id="CC6"><a href="#CC6" class="headerlink" title="CC6"></a>CC6</h1><p>相较于CC1而言，CC6适用于java版本高于8u71，前面的执行方法与CC1类似，主要是用了Transformer.transform</p>
-<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">/*
-	Gadget chain:
-	    java.io.ObjectInputStream.readObject()
-            java.util.HashSet.readObject()
-                java.util.HashMap.put()
-                java.util.HashMap.hash()
-                    org.apache.commons.collections.keyvalue.TiedMapEntry.hashCode()
-                    org.apache.commons.collections.keyvalue.TiedMapEntry.getValue()
-//以下为CC6利用链，以上为CC1共同部分
-                        org.apache.commons.collections.map.LazyMap.get()
-                            org.apache.commons.collections.functors.ChainedTransformer.transform()
-                            org.apache.commons.collections.functors.InvokerTransformer.transform()
-                            java.lang.reflect.Method.invoke()
-                                java.lang.Runtime.exec()
-*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="/2022/10/07/cc6/%E6%88%AA%E5%B1%8F2022-05-28_21.16.11.png" alt="截屏2022-05-28 21.16.11.png"></p>
-]]></content>
-      <categories>
-        <category>Java代码审计</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>EvilModel:Hiding Malware Inside of Neural Network Models</title>
-    <url>/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/</url>
-    <content><![CDATA[<h1 id="EvilModel-Hiding-Malware-Inside-of-Neural-Network-Models"><a href="#EvilModel-Hiding-Malware-Inside-of-Neural-Network-Models" class="headerlink" title="EvilModel:Hiding Malware Inside of Neural Network Models"></a>EvilModel:Hiding Malware Inside of Neural Network Models</h1><h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>本文提出了一种通过神经网络模型秘密地传递恶意软件的新方法。神经网络模型解释能力差，泛化能力好。通过在神经元中潜入恶意软件，可以秘密地传递恶意软件，而对神经网络性能影响很小或者没有影响。同时，由于神经网络模型的结构保持不变，因此可以通过防病毒引擎的安全扫描。实验表明：在一个178M的AlexNet模型中可以嵌入36.9M的恶意软件，准确损失率在1%。</p>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>恶意软件字节替换或映射模型参数来隐藏神经网络模型中的恶意软件。</p>
-<p>StegoNet提出了4种方法：</p>
-<ul>
-<li>LSB steganography (LSB替换)</li>
-<li>resilience training（弹性训练）</li>
-<li>value mapping（值映射）</li>
-<li>sign-mapping（符号映射）</li>
-</ul>
-<p>主流框架（TenseorFlow，PyTorch）中的模型参数是32位浮点数。通过将参数的最后几位修改为恶意软件代码，可以在不影响模型性能的情况下嵌入恶意攻击载荷。</p>
-<p>在本文中提出了快速替换，通过修改神经元来隐蔽传递malware。与仅修改参数的LSB不同，本文修改了整个神经元以嵌入恶意软件。一般认为隐藏层神经元会影响神经网络的分类结果，因此隐藏层神经元应该是固定的，其参数应该保持不变。事实上，我们发现由于网络层存在<strong>冗余神经元</strong>，一些神经元的变化对神经网络的性能影响不大。此外，在模型结构不变的情况下，隐藏的恶意软件可以逃避反病毒引擎的检测。因此，恶意软件可以通过修改神经元来隐蔽地、隐蔽地嵌入并传递到目标设备。</p>
-<p>使用神经网络模型的优势如下：</p>
-<p> i) 通过将恶意软件隐藏在神经网络模型中，将恶意软件进行反汇编，使恶意软件的特征不可用，从而使恶意软件能够逃避检测。 </p>
-<p>ii) 由于冗余的神经元和出色的泛化能力，修改后的神经网络模型在不同的任务中仍然可以保持性能而不会引起异常。</p>
-<p>iii）特定任务中神经网络模型的规模很大，因此可以交付大型恶意软件。 iv) 此方法不依赖其他系统漏洞。 嵌入恶意软件的模型可以通过供应链的模型更新渠道或其他方式交付，不会引起最终用户的关注。 </p>
-<p>v）随着神经网络的应用越来越广泛，这种方法将在未来传播恶意软件中普遍存在。</p>
-<h2 id="本文贡献："><a href="#本文贡献：" class="headerlink" title="本文贡献："></a>本文贡献：</h2><ul>
-<li>我们提出了快速替换以在神经网络模型中嵌入恶意软件</li>
-<li>我们研究了DNN 模型嵌入恶意软件的能力以及嵌入的恶意软件对模型性能的影响</li>
-<li>我们验证了在不同模型和恶意软件样本上快速替换的可行性</li>
-</ul>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><h3 id="A-StegoNet"><a href="#A-StegoNet" class="headerlink" title="A. StegoNet"></a>A. StegoNet</h3><p><strong>LSB 替换</strong>。 DNN 模型是多余的。 StegoNet 通过替换参数的最低有效位将恶意软件字节嵌入 DNN 模型。 对于大型 DNN 模型，这种方法可以嵌入大型恶意软件而不会降低性能。 然而，对于小型模型，随着嵌入恶意软件字节数的增加，模型性能急剧下降。</p>
-<p><strong>弹性训练</strong>。由于DNN模型具有容错能力，StegoNet通过用恶意软件字节替换参数，故意在神经元参数中引入内部错误。然后对模型进行恢复力训练。“受损神经元”在训练期间不会更新。与LSB替换相比，该方法可以在模型中嵌入更多恶意软件。</p>
-<p><strong>值映射</strong>。 StegoNet 搜索模型参数以找到与恶意软件段相似的位，并将参数映射（或更改）恶意软件。通过这种方式，恶意软件可以映射到模型而不会大大降低模型性能。但是，它需要一个排列图来恢复恶意软件。嵌入率低于上述方法。</p>
-<p><strong>符号映射</strong>。 StegoNet 还将参数的符号映射到恶意软件位。这种方法限制了可以嵌入的恶意软件的大小，并且在四种方法中嵌入率最低。此外，排列图会很大，使得这种方法不切实际。</p>
-<p>这些方法的常见问题是：</p>
-<p>i）嵌入率低</p>
-<p>ii）对模型性能有显著影响。</p>
-<p>这些限制使StegoNet无法在真实场景中有效使用。</p>
-<h3 id="B-Related-Work"><a href="#B-Related-Work" class="headerlink" title="B. Related Work"></a>B. Related Work</h3><p>建议使用 IPFS（星际文件系统）来传递恶意软件。 恶意软件的地址对多个参与者隐藏。 通过计算拉格朗日多项式，可以获得IPFS地址的种子，进而计算出恶意软件的地址。提出了使用 DNA 隐写术绕过筛选电子设备的系统的潜力。 使用 DNA 中的四种不同核苷酸对信息进行加密和编码。将区块链作为一种隐蔽的通信渠道，将秘密命令嵌入到比特币的地址中进行传输。 所有交易均受加密算法保护。 但是，它也不适用于传输大数据。</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>A. Overall Workﬂow</p>
-<p><img src="/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/%E6%88%AA%E5%B1%8F2022-05-15_14.39.59.png" alt="截屏2022-05-15 14.39.59.png"></p>
-<p>攻击者希望通过修改神经元的参数将恶意软件样本嵌入到神经网络模型中，而不会对模型的性能产生重大影响。为此，攻击者应遵循以下步骤。首先，攻击者需要得到一个神经网络模型。攻击者可以设计自己的网络，或者从公共存储库下载训练有素的模型。然后攻击者需要使用准备好的数据集在特定任务上训练或微调模型，以获得性能良好的模型。之后，攻击者选择合适的网络层并将恶意软件嵌入模型中。嵌入后，攻击者需要评估模型的性能以确保损失是可以接受的。如果损失超过可接受的范围，攻击者需要 “冻结” 嵌入恶意软件的神经元并重新训练模型以获得更高的性能。 一旦模型准备好，攻击者就可以使用供应链污染等方法将其发布到公共存储库或其他地方。</p>
-<p>接收器被认为是在目标设备上运行的程序，可以帮助下载模型并从模型中提取嵌入式恶意软件。接收器可以主动下载并替换目标设备上的现有模型，或者等待默认更新程序更新模型。在接收到模型后，接收方根据预定义的规则从模型中提取恶意软件。然后接收器检查恶意软件的完整性。通常，如果收到并验证了模型，就会集成恶意软件。验证是为了组装。然后，接收者可以立即运行恶意软件，或等到预定的条件。</p>
-<h2 id="B-Technical-Design"><a href="#B-Technical-Design" class="headerlink" title="B. Technical Design"></a>B. Technical Design</h2><p><strong>1. 神经网络模型的结构:</strong></p>
-<p>神经网络模型通常由输入层，一个或多个隐藏层和一个输出层组成，如图2所示，输入层接收外部信号，并通过输入层神经元将信号发送到神经网络的隐藏层。隐藏层神经元接收来自具有一定连接权重的前一层神经元的传入信号，并在添加一定偏置后输出到下一层。输出层是最后一层。它接收来自隐藏层的传入信号并对其进行处理以获得神经网络的输出。</p>
-<p><img src="/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/%E6%88%AA%E5%B1%8F2022-05-15_14.44.52.png" alt="截屏2022-05-15 14.44.52.png"></p>
-<p>隐藏层中的神经元对于来自前一层的每个输入信号xi具有连接权重wi。假设神经元的所有输入x = (x1，x2，…，xn)，并且所有连接权重w = (w1，w2，…，wn)，其中n是输入信号的数量 (即前一层的神经元数量)。神经元接收输入信号x，并通过矩阵运算以权重w计算x。然后加入一个偏差b来拟合目标函数。现在神经元的输出是：</p>
-<p><img src="/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/Untitled.png" alt="Untitled"></p>
-<p>我们可以看到，每个神经元包含n个1个参数，即n个连接权值 (前一层神经元的数量) 和一个偏置。因此，具有m个神经元的神经层总共包含m(n+1) 个参数。在主流的神经网络框架 (PyTorch、TensorFlow等) 中，每个参数都是一个32位的浮点数。因此，每个神经元中参数的大小为32(n+1) 位，即4(n+1) 字节，每层中参数的大小为32m(n+1) 位，即4m(n+1) 字节。</p>
-<p><strong>2.Neuron中的参数:</strong> </p>
-<p>如上所述，神经元中的参数将被恶意软件替换。由于每个参数都是浮点数，因此攻击者需要将恶意软件中的字节转换为合理的浮点数。为此，我们需要分析参数的分布。图3示出了来自模型中随机选择的神经元的样本参数。神经元中有2048参数。在2048值中，有1001个负数和1047个正数，它们近似1:1，它们分布在区间 (−0.0258，0.0286)中。其中，11个的绝对值小于10-4，占0.537%，97个小于10-3，占4.736%。恶意软件字节可以根据参数在神经元中的分布进行转换。</p>
-<p><img src="/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/%E6%88%AA%E5%B1%8F2022-05-15_14.52.53.png" alt="截屏2022-05-15 14.52.53.png"></p>
-<p>然后攻击者需要将恶意软件字节转换为32位浮点数在合理的时间间隔内。图4是符合 IEEE的 32位浮点数的格式标准。假设数字以二进制的形式显示为±1.m×2n。转换为浮点数时，第一位是符号位，表示值的符号。第 2-9 位是指数，值为 n+127，可以表示指数范围 2的−127次方至2的+127次方。第10-32位是尾数位，表示 m。通过分析浮点数的格式，可以发现数字的绝对值由指数部分确定，并且可以通过调整指数部分将值固定到一定的时间间隔。例如，如果第 3-6 位设置为 1，并且最后24位设置为任意值（即0x3c000000-0x3cffffff），则浮点数的绝对值介于 0.0078 和 0.0313 之间;如果第4-6个设置为1，则值介于 3 × 10的−5次方 到1.3 ×10的−4次方之间。</p>
-<p>因此，在嵌入恶意软件字节时，如果将指数位设置为指定值 (即浮点数的第一个字节为0x3c、0x38、0xbc或0xb8，就可以将恶意软件嵌入到参数中，而无需对参数的值进行太大更改。这样每个参数都可以嵌入3个字节的恶意软件。</p>
-<p><strong>3.快速替换：</strong></p>
-<p>攻击者应定义一组规则，将恶意软件嵌入到神经网络模型中，以便接收方能够正确提取恶意软件。我们建议快速替换来嵌入恶意软件。在实验中，对于嵌入的恶意软件，我们每次读取3个字节，根据参数在第一个字节中添加前缀“\x3c”或“\xbc”，然后将字节转换为有效的大端浮点数。如果剩余样本少于3个字节，我们将添加填充“\x00”以填充3个字节。在嵌入模型之前，这些数字被转换成张量。然后，给定一个神经网络模型和一个指定的层，我们通过替换每个神经元中的权重和偏差来依次修改神经元。我们使用每个神经元中的连接权重来存储转换后的恶意软件字节，并使用偏差来存储恶意软件的长度和哈希。提取过程与嵌入过程相反。接收器需要提取给定层中神经元的参数，将参数转换为浮点数，将数字转换为大端格式的字节，并删除字节的前缀以获得二进制字节流。然后，根据第一个神经元的偏差记录的长度，接收器可以组装恶意软件。接收器可以通过比较提取的恶意软件的哈希值与bias中记录的哈希值来验证提取过程。</p>
-<p>IV. EXPERIMENTS SETUP</p>
-<p>在本节中，我们准备了实验过程，包括模型和恶意软件样本。实验分为两部分:</p>
-<ul>
-<li>第一部分研究自训练神经网络模型的嵌入能力</li>
-<li>第二部分是该方法在公共预训练模型中的应用。</li>
-</ul>
-<p><strong>A. Neural Network Models</strong></p>
-<p><strong>1.自我训练模型</strong></p>
-<p>我们在Fashion MNIST[16]上建立并训练了一个AlexNet模型，以证明该方法的可行性。AlexNet是一个8层卷积神经网络，包括五个卷积层、两个完全连接的隐藏层和一个完全连接的输出层。我们调整了网络结构以适应数据集。AlexNet的输入为224x224单通道灰度图像，输出是一个长度为10的向量，代表10个类。图像在被送入网络之前被调整为224x224。由于我们打算交付大型恶意软件，并且完全连接的层有更多的神经元，我们将在实验中更多地关注完全连接的层。我们将完全连接的层分别命名为FC.0，FC.1和FC.2。FC.0是第一个完全连接的隐藏层，有4096个神经元。它从卷积层接收6400个输入，并生成4096个输出。因此，每个神经元的FC.0层有6400个连接权重，这意味着6400×3/1024=18.75KB的恶意软件可以嵌入FC.0层神经元。FC.1是第二个完全连接的隐藏层，有4096个神经元。它接收4096个输入，并生成4096个输出。因此，4096×3/1024=12KB的恶意软件可以嵌入FC.1单层神经元。FC.2是输出层，我们保持不变，主要关注FC.0和FC.1。FC.2接收4096个输入，并生成10个输出。</p>
-<p>批处理归一化 (BN) 是加速深度网络收敛的有效技术。由于BN层可以在完全连接的层中的仿射变换和激活函数之间应用，因此我们比较了在完全连接的层上具有和不具有BN的模型的性能。经过大约100个时期的训练，我们分别在没有BN的测试集上获得了精度93.44% 的模型，以及在BN的情况下获得了精度93.75% 的模型。每个型号的尺寸为178mb。模型已保存以备后用。</p>
-<p><strong>2.公共模型</strong></p>
-<p>我们在来自PyTorch公共存储库的ImageNet上使用了10个预训练的主流模型来证明这种方法的普遍性。该模型接受大小为 224x224 的三通道图像，并生成长度为1000的向量。图像首先调整为256x256，然后随机裁剪为224x244大小。嵌入前ImageNet上的模型和初始精度如表 I 所示。攻击者可以使用现有模型来减少工作量，并将嵌入恶意软件的模型发布到公共存储库和 DNN 市场上。</p>
-<p><strong>B. Malware Samples</strong></p>
-<p>为了模拟真实场景，我们在来自 InQuest和Malware DB的高级恶意软件活动中使用了真实的恶意软件样本。恶意软件样本有不同的大小和类型。 我们使用 InQuest的样本进行容量研究，使用 Malware DB的样本进行普遍性测试。 实验中显示了有关这两部分中使用的恶意软件样本的详细信息。</p>
-<h2 id="EVALUATION"><a href="#EVALUATION" class="headerlink" title="EVALUATION"></a>EVALUATION</h2><p>在本节中，我们将介绍有关嵌入能力的实验以及在公共预训练模型上的应用。关于快速替换有一些主要关心的问题:</p>
-<p> i) 该方法有效吗？如果可行</p>
-<p>ii) 模型中可以嵌入多少恶意软件？</p>
-<p>iii) 模型上的性能下降是什么？</p>
-<p>iv) BN有帮助吗？</p>
-<p>v) 哪一层更适合嵌入？</p>
-<p>vi) 如何通过再培训恢复准确性？效果如何？</p>
-<p>vii) 嵌入恶意软件的模型能否通过防病毒引擎的安全扫描？</p>
-<p>在下面的实验中，我们将回答上述问题。</p>
-<p><strong>A. Malware embedding</strong></p>
-<ol>
-<li>对于Q-I: </li>
-</ol>
-<p>FC.1是最接近输出层的隐藏层。如上所述，FC.1层中的每个神经元都可以嵌入12KB的恶意软件。我们使用恶意软件样本1-6分别替换层中的神经元，并评估测试集的性能。测试精度范围从93.43% 到93.45%。(我们注意到，在某些情况下，准确性略有提高。)然后我们从模型中提取恶意软件并计算其SHA-1哈希。哈希保持不变。它表明该方法有效。</p>
-<ol start="2">
-<li>对于Q-II至Q-IV: </li>
-</ol>
-<p>对于问题II和III，我们使用样本1-6替换了FC.1层中的5,10,….4095神经元。在具有和不具有BN的AlexNet上的FC.0中，并记录了被替换模型的准确性。FC.0中的每个神经元可以嵌入18.75kb的恶意软件。由于一个样本最多可以替换FC.0和FC.1层中的5个神经元，因此我们用同一样本重复替换该层中的神经元，直到替换的神经元数量达到目标。最后，我们得到了6组精度数据，并分别计算了它们的平均值。</p>
-<p>可以发现，当替换较少数量的神经元时，模型的准确性几乎没有影响。对于带有BN的AlexNet，在FC.1中替换1025神经元 (25%) 时，准确性仍然可以达到93.63%，相当于嵌入了12MB的恶意软件。当替换2050神经元 (50%) 时，准确度是93.11% 的。当超过2105个神经元被替换时，准确度下降到93% 以下。当超过2900个神经元被替换时，准确度下降到90% 以下。此时，随着替换神经元的增加，准确性显着降低。当替换超过3290个神经元时，准确度下降到80% 以下。当所有神经元被替换时，准确度下降到10% 左右 (相当于随机猜测)。对于FC.0，当分别替换超过220、1060、1550神经元时，准确度下降到低于93% 、90% 、80%。</p>
-<p>结果可以回答问题II至IV。如果攻击者希望将模型的性能保持在1%的准确性损失内并嵌入更多的恶意软件，则在AlexNet上替换不超过2285个神经元，BN可以嵌入2285×12/1024=26.8mb的恶意软件。</p>
-<ol start="3">
-<li>对于Q-V: </li>
-</ol>
-<p>为了回答问题V，我们选择将恶意软件嵌入AlexNet的所有层。卷积层的参数比完全连接的层少得多。因此，不建议在卷积层中嵌入恶意软件。但是，为了选择最佳图层，我们仍然与所有图层进行了比较。我们使用样品替换每层中不同比例的神经元，并记录准确性。由于不同的层具有不同的参数，因此我们使用百分比来指示替换的数量。对于具有和不具有BN的AlexNet，FC.1在所有层中都具有出色的性能。可以推断，对于完全连接的层，更靠近输出层的层更适合嵌入。</p>
-<p><strong>B. Retraining</strong></p>
-<p>如果测试准确率大幅下降，攻击者可以重新训练模型以恢复性能。 基于CNN的模型使用反向传播来更新每个神经元中的参数。当一些神经元不需要更新时，可以将它们“冻结”（通过在 PyTorch中将“requires grad”属性设置为“false”），这样在反向传播的过程中会忽略里面的这些参数，从而保证嵌入式恶意软件保持不变。</p>
-<p>我们选择了性能与平均精度相似的样本，并在有和没有BN的模型中替换了FC.0和FC.1层中的 50、100、…、4050 个神经元。然后我们“冻结”恶意软件嵌入层并使用训练集重新训练模型一个时期。记录在培训前后的测试准确性。在对每个模型进行重新训练后，我们提取模型中嵌入的恶意软件并计算组装恶意软件的SHA-1哈希值，它们都与原始哈希值匹配。</p>
-<p>具有BN模型，并在FC.0层进行的准确率会提高。</p>
-<p>如果攻击者使用带有BN和重新训练的模型将恶意软件嵌入到FC.1上，并且希望将准确性损失保持在模型的1% 范围内，则可以替换3150多个神经元。它将导致3150 × 12/1024 = 36.9mb的恶意软件嵌入。如果攻击者希望将准确度保持在90% 以上，则可以替换3300神经元，嵌入38.7mb的恶意软件。</p>
-<h2 id="POSSIBLE-COUNTERMEASURES"><a href="#POSSIBLE-COUNTERMEASURES" class="headerlink" title="POSSIBLE COUNTERMEASURES"></a>POSSIBLE COUNTERMEASURES</h2><p>尽管恶意软件可以嵌入到DNN模型中，但仍有办法抵御此类攻击。首先恶意软件嵌入模型无法修改。对于专业人士来说，神经元的参数可以通过微调、修剪、模型压缩或其他操作来改变，从而打破恶意软件的结构，防止恶意软件正常恢复。然而，非专业用户仍可能面临此类攻击。其次，恶意软件嵌入模型的交付需要供应链污染等方法。如果用户从可信平台下载所需的模型并检查模型的完整性，影响也可以降低。最后，DNN模型市场还需要验证用户身份，以避免被恶意用户滥用。</p>
-<h2 id="CONCLUSION"><a href="#CONCLUSION" class="headerlink" title="CONCLUSION"></a>CONCLUSION</h2><p>本文提出了一种方法，可以通过神经网络模型隐蔽地、回避地传递恶意软件。当神经元被恶意软件字节替换时，模型的结构保持不变。由于恶意软件在神经元中被拆解，其特征不再可用，可以逃避常见反病毒引擎的检测。由于神经网络模型对变化具有鲁棒性，因此性能没有显着损失。实验表明，通过在全连接层上应用批归一化，一个 178MB-AlexNet模型可以在 1% 的准确率损失内嵌入 36.9MB 的恶意软件。 VirusTotal 的安全扫描也证明了嵌入恶意软件的模型可以逃避检测。 这篇论文证明了神经网络也可以被恶意使用。 随着人工智能的普及，人工智能辅助攻击将不断涌现，给计算机安全带来新的挑战。 网络攻防是相互依存的。 我们相信未来将应用针对人工智能辅助攻击的对策。 我们希望提议的方案将有助于未来的保护工作。</p>
-<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>这种隐藏手段可以有效隐藏恶意软件，但当恶意软件执行时，还是需要考虑行为模式检测，需要进一步思考恶意软件的行为检测模式绕过。</p>
-]]></content>
-      <categories>
-        <category>论文</category>
       </categories>
       <tags>
         <tag>博客</tag>
@@ -483,6 +378,111 @@ Content<span class="token operator">-</span>Type<span class="token punctuation">
 ]]></content>
       <categories>
         <category>HTB</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>EvilModel:Hiding Malware Inside of Neural Network Models</title>
+    <url>/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/</url>
+    <content><![CDATA[<h1 id="EvilModel-Hiding-Malware-Inside-of-Neural-Network-Models"><a href="#EvilModel-Hiding-Malware-Inside-of-Neural-Network-Models" class="headerlink" title="EvilModel:Hiding Malware Inside of Neural Network Models"></a>EvilModel:Hiding Malware Inside of Neural Network Models</h1><h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>本文提出了一种通过神经网络模型秘密地传递恶意软件的新方法。神经网络模型解释能力差，泛化能力好。通过在神经元中潜入恶意软件，可以秘密地传递恶意软件，而对神经网络性能影响很小或者没有影响。同时，由于神经网络模型的结构保持不变，因此可以通过防病毒引擎的安全扫描。实验表明：在一个178M的AlexNet模型中可以嵌入36.9M的恶意软件，准确损失率在1%。</p>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>恶意软件字节替换或映射模型参数来隐藏神经网络模型中的恶意软件。</p>
+<p>StegoNet提出了4种方法：</p>
+<ul>
+<li>LSB steganography (LSB替换)</li>
+<li>resilience training（弹性训练）</li>
+<li>value mapping（值映射）</li>
+<li>sign-mapping（符号映射）</li>
+</ul>
+<p>主流框架（TenseorFlow，PyTorch）中的模型参数是32位浮点数。通过将参数的最后几位修改为恶意软件代码，可以在不影响模型性能的情况下嵌入恶意攻击载荷。</p>
+<p>在本文中提出了快速替换，通过修改神经元来隐蔽传递malware。与仅修改参数的LSB不同，本文修改了整个神经元以嵌入恶意软件。一般认为隐藏层神经元会影响神经网络的分类结果，因此隐藏层神经元应该是固定的，其参数应该保持不变。事实上，我们发现由于网络层存在<strong>冗余神经元</strong>，一些神经元的变化对神经网络的性能影响不大。此外，在模型结构不变的情况下，隐藏的恶意软件可以逃避反病毒引擎的检测。因此，恶意软件可以通过修改神经元来隐蔽地、隐蔽地嵌入并传递到目标设备。</p>
+<p>使用神经网络模型的优势如下：</p>
+<p> i) 通过将恶意软件隐藏在神经网络模型中，将恶意软件进行反汇编，使恶意软件的特征不可用，从而使恶意软件能够逃避检测。 </p>
+<p>ii) 由于冗余的神经元和出色的泛化能力，修改后的神经网络模型在不同的任务中仍然可以保持性能而不会引起异常。</p>
+<p>iii）特定任务中神经网络模型的规模很大，因此可以交付大型恶意软件。 iv) 此方法不依赖其他系统漏洞。 嵌入恶意软件的模型可以通过供应链的模型更新渠道或其他方式交付，不会引起最终用户的关注。 </p>
+<p>v）随着神经网络的应用越来越广泛，这种方法将在未来传播恶意软件中普遍存在。</p>
+<h2 id="本文贡献："><a href="#本文贡献：" class="headerlink" title="本文贡献："></a>本文贡献：</h2><ul>
+<li>我们提出了快速替换以在神经网络模型中嵌入恶意软件</li>
+<li>我们研究了DNN 模型嵌入恶意软件的能力以及嵌入的恶意软件对模型性能的影响</li>
+<li>我们验证了在不同模型和恶意软件样本上快速替换的可行性</li>
+</ul>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><h3 id="A-StegoNet"><a href="#A-StegoNet" class="headerlink" title="A. StegoNet"></a>A. StegoNet</h3><p><strong>LSB 替换</strong>。 DNN 模型是多余的。 StegoNet 通过替换参数的最低有效位将恶意软件字节嵌入 DNN 模型。 对于大型 DNN 模型，这种方法可以嵌入大型恶意软件而不会降低性能。 然而，对于小型模型，随着嵌入恶意软件字节数的增加，模型性能急剧下降。</p>
+<p><strong>弹性训练</strong>。由于DNN模型具有容错能力，StegoNet通过用恶意软件字节替换参数，故意在神经元参数中引入内部错误。然后对模型进行恢复力训练。“受损神经元”在训练期间不会更新。与LSB替换相比，该方法可以在模型中嵌入更多恶意软件。</p>
+<p><strong>值映射</strong>。 StegoNet 搜索模型参数以找到与恶意软件段相似的位，并将参数映射（或更改）恶意软件。通过这种方式，恶意软件可以映射到模型而不会大大降低模型性能。但是，它需要一个排列图来恢复恶意软件。嵌入率低于上述方法。</p>
+<p><strong>符号映射</strong>。 StegoNet 还将参数的符号映射到恶意软件位。这种方法限制了可以嵌入的恶意软件的大小，并且在四种方法中嵌入率最低。此外，排列图会很大，使得这种方法不切实际。</p>
+<p>这些方法的常见问题是：</p>
+<p>i）嵌入率低</p>
+<p>ii）对模型性能有显著影响。</p>
+<p>这些限制使StegoNet无法在真实场景中有效使用。</p>
+<h3 id="B-Related-Work"><a href="#B-Related-Work" class="headerlink" title="B. Related Work"></a>B. Related Work</h3><p>建议使用 IPFS（星际文件系统）来传递恶意软件。 恶意软件的地址对多个参与者隐藏。 通过计算拉格朗日多项式，可以获得IPFS地址的种子，进而计算出恶意软件的地址。提出了使用 DNA 隐写术绕过筛选电子设备的系统的潜力。 使用 DNA 中的四种不同核苷酸对信息进行加密和编码。将区块链作为一种隐蔽的通信渠道，将秘密命令嵌入到比特币的地址中进行传输。 所有交易均受加密算法保护。 但是，它也不适用于传输大数据。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>A. Overall Workﬂow</p>
+<p><img src="/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/%E6%88%AA%E5%B1%8F2022-05-15_14.39.59.png" alt="截屏2022-05-15 14.39.59.png"></p>
+<p>攻击者希望通过修改神经元的参数将恶意软件样本嵌入到神经网络模型中，而不会对模型的性能产生重大影响。为此，攻击者应遵循以下步骤。首先，攻击者需要得到一个神经网络模型。攻击者可以设计自己的网络，或者从公共存储库下载训练有素的模型。然后攻击者需要使用准备好的数据集在特定任务上训练或微调模型，以获得性能良好的模型。之后，攻击者选择合适的网络层并将恶意软件嵌入模型中。嵌入后，攻击者需要评估模型的性能以确保损失是可以接受的。如果损失超过可接受的范围，攻击者需要 “冻结” 嵌入恶意软件的神经元并重新训练模型以获得更高的性能。 一旦模型准备好，攻击者就可以使用供应链污染等方法将其发布到公共存储库或其他地方。</p>
+<p>接收器被认为是在目标设备上运行的程序，可以帮助下载模型并从模型中提取嵌入式恶意软件。接收器可以主动下载并替换目标设备上的现有模型，或者等待默认更新程序更新模型。在接收到模型后，接收方根据预定义的规则从模型中提取恶意软件。然后接收器检查恶意软件的完整性。通常，如果收到并验证了模型，就会集成恶意软件。验证是为了组装。然后，接收者可以立即运行恶意软件，或等到预定的条件。</p>
+<h2 id="B-Technical-Design"><a href="#B-Technical-Design" class="headerlink" title="B. Technical Design"></a>B. Technical Design</h2><p><strong>1. 神经网络模型的结构:</strong></p>
+<p>神经网络模型通常由输入层，一个或多个隐藏层和一个输出层组成，如图2所示，输入层接收外部信号，并通过输入层神经元将信号发送到神经网络的隐藏层。隐藏层神经元接收来自具有一定连接权重的前一层神经元的传入信号，并在添加一定偏置后输出到下一层。输出层是最后一层。它接收来自隐藏层的传入信号并对其进行处理以获得神经网络的输出。</p>
+<p><img src="/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/%E6%88%AA%E5%B1%8F2022-05-15_14.44.52.png" alt="截屏2022-05-15 14.44.52.png"></p>
+<p>隐藏层中的神经元对于来自前一层的每个输入信号xi具有连接权重wi。假设神经元的所有输入x = (x1，x2，…，xn)，并且所有连接权重w = (w1，w2，…，wn)，其中n是输入信号的数量 (即前一层的神经元数量)。神经元接收输入信号x，并通过矩阵运算以权重w计算x。然后加入一个偏差b来拟合目标函数。现在神经元的输出是：</p>
+<p><img src="/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/Untitled.png" alt="Untitled"></p>
+<p>我们可以看到，每个神经元包含n个1个参数，即n个连接权值 (前一层神经元的数量) 和一个偏置。因此，具有m个神经元的神经层总共包含m(n+1) 个参数。在主流的神经网络框架 (PyTorch、TensorFlow等) 中，每个参数都是一个32位的浮点数。因此，每个神经元中参数的大小为32(n+1) 位，即4(n+1) 字节，每层中参数的大小为32m(n+1) 位，即4m(n+1) 字节。</p>
+<p><strong>2.Neuron中的参数:</strong> </p>
+<p>如上所述，神经元中的参数将被恶意软件替换。由于每个参数都是浮点数，因此攻击者需要将恶意软件中的字节转换为合理的浮点数。为此，我们需要分析参数的分布。图3示出了来自模型中随机选择的神经元的样本参数。神经元中有2048参数。在2048值中，有1001个负数和1047个正数，它们近似1:1，它们分布在区间 (−0.0258，0.0286)中。其中，11个的绝对值小于10-4，占0.537%，97个小于10-3，占4.736%。恶意软件字节可以根据参数在神经元中的分布进行转换。</p>
+<p><img src="/2022/10/07/evilmodel-hiding-malware-inside-of-neural-network-models/%E6%88%AA%E5%B1%8F2022-05-15_14.52.53.png" alt="截屏2022-05-15 14.52.53.png"></p>
+<p>然后攻击者需要将恶意软件字节转换为32位浮点数在合理的时间间隔内。图4是符合 IEEE的 32位浮点数的格式标准。假设数字以二进制的形式显示为±1.m×2n。转换为浮点数时，第一位是符号位，表示值的符号。第 2-9 位是指数，值为 n+127，可以表示指数范围 2的−127次方至2的+127次方。第10-32位是尾数位，表示 m。通过分析浮点数的格式，可以发现数字的绝对值由指数部分确定，并且可以通过调整指数部分将值固定到一定的时间间隔。例如，如果第 3-6 位设置为 1，并且最后24位设置为任意值（即0x3c000000-0x3cffffff），则浮点数的绝对值介于 0.0078 和 0.0313 之间;如果第4-6个设置为1，则值介于 3 × 10的−5次方 到1.3 ×10的−4次方之间。</p>
+<p>因此，在嵌入恶意软件字节时，如果将指数位设置为指定值 (即浮点数的第一个字节为0x3c、0x38、0xbc或0xb8，就可以将恶意软件嵌入到参数中，而无需对参数的值进行太大更改。这样每个参数都可以嵌入3个字节的恶意软件。</p>
+<p><strong>3.快速替换：</strong></p>
+<p>攻击者应定义一组规则，将恶意软件嵌入到神经网络模型中，以便接收方能够正确提取恶意软件。我们建议快速替换来嵌入恶意软件。在实验中，对于嵌入的恶意软件，我们每次读取3个字节，根据参数在第一个字节中添加前缀“\x3c”或“\xbc”，然后将字节转换为有效的大端浮点数。如果剩余样本少于3个字节，我们将添加填充“\x00”以填充3个字节。在嵌入模型之前，这些数字被转换成张量。然后，给定一个神经网络模型和一个指定的层，我们通过替换每个神经元中的权重和偏差来依次修改神经元。我们使用每个神经元中的连接权重来存储转换后的恶意软件字节，并使用偏差来存储恶意软件的长度和哈希。提取过程与嵌入过程相反。接收器需要提取给定层中神经元的参数，将参数转换为浮点数，将数字转换为大端格式的字节，并删除字节的前缀以获得二进制字节流。然后，根据第一个神经元的偏差记录的长度，接收器可以组装恶意软件。接收器可以通过比较提取的恶意软件的哈希值与bias中记录的哈希值来验证提取过程。</p>
+<p>IV. EXPERIMENTS SETUP</p>
+<p>在本节中，我们准备了实验过程，包括模型和恶意软件样本。实验分为两部分:</p>
+<ul>
+<li>第一部分研究自训练神经网络模型的嵌入能力</li>
+<li>第二部分是该方法在公共预训练模型中的应用。</li>
+</ul>
+<p><strong>A. Neural Network Models</strong></p>
+<p><strong>1.自我训练模型</strong></p>
+<p>我们在Fashion MNIST[16]上建立并训练了一个AlexNet模型，以证明该方法的可行性。AlexNet是一个8层卷积神经网络，包括五个卷积层、两个完全连接的隐藏层和一个完全连接的输出层。我们调整了网络结构以适应数据集。AlexNet的输入为224x224单通道灰度图像，输出是一个长度为10的向量，代表10个类。图像在被送入网络之前被调整为224x224。由于我们打算交付大型恶意软件，并且完全连接的层有更多的神经元，我们将在实验中更多地关注完全连接的层。我们将完全连接的层分别命名为FC.0，FC.1和FC.2。FC.0是第一个完全连接的隐藏层，有4096个神经元。它从卷积层接收6400个输入，并生成4096个输出。因此，每个神经元的FC.0层有6400个连接权重，这意味着6400×3/1024=18.75KB的恶意软件可以嵌入FC.0层神经元。FC.1是第二个完全连接的隐藏层，有4096个神经元。它接收4096个输入，并生成4096个输出。因此，4096×3/1024=12KB的恶意软件可以嵌入FC.1单层神经元。FC.2是输出层，我们保持不变，主要关注FC.0和FC.1。FC.2接收4096个输入，并生成10个输出。</p>
+<p>批处理归一化 (BN) 是加速深度网络收敛的有效技术。由于BN层可以在完全连接的层中的仿射变换和激活函数之间应用，因此我们比较了在完全连接的层上具有和不具有BN的模型的性能。经过大约100个时期的训练，我们分别在没有BN的测试集上获得了精度93.44% 的模型，以及在BN的情况下获得了精度93.75% 的模型。每个型号的尺寸为178mb。模型已保存以备后用。</p>
+<p><strong>2.公共模型</strong></p>
+<p>我们在来自PyTorch公共存储库的ImageNet上使用了10个预训练的主流模型来证明这种方法的普遍性。该模型接受大小为 224x224 的三通道图像，并生成长度为1000的向量。图像首先调整为256x256，然后随机裁剪为224x244大小。嵌入前ImageNet上的模型和初始精度如表 I 所示。攻击者可以使用现有模型来减少工作量，并将嵌入恶意软件的模型发布到公共存储库和 DNN 市场上。</p>
+<p><strong>B. Malware Samples</strong></p>
+<p>为了模拟真实场景，我们在来自 InQuest和Malware DB的高级恶意软件活动中使用了真实的恶意软件样本。恶意软件样本有不同的大小和类型。 我们使用 InQuest的样本进行容量研究，使用 Malware DB的样本进行普遍性测试。 实验中显示了有关这两部分中使用的恶意软件样本的详细信息。</p>
+<h2 id="EVALUATION"><a href="#EVALUATION" class="headerlink" title="EVALUATION"></a>EVALUATION</h2><p>在本节中，我们将介绍有关嵌入能力的实验以及在公共预训练模型上的应用。关于快速替换有一些主要关心的问题:</p>
+<p> i) 该方法有效吗？如果可行</p>
+<p>ii) 模型中可以嵌入多少恶意软件？</p>
+<p>iii) 模型上的性能下降是什么？</p>
+<p>iv) BN有帮助吗？</p>
+<p>v) 哪一层更适合嵌入？</p>
+<p>vi) 如何通过再培训恢复准确性？效果如何？</p>
+<p>vii) 嵌入恶意软件的模型能否通过防病毒引擎的安全扫描？</p>
+<p>在下面的实验中，我们将回答上述问题。</p>
+<p><strong>A. Malware embedding</strong></p>
+<ol>
+<li>对于Q-I: </li>
+</ol>
+<p>FC.1是最接近输出层的隐藏层。如上所述，FC.1层中的每个神经元都可以嵌入12KB的恶意软件。我们使用恶意软件样本1-6分别替换层中的神经元，并评估测试集的性能。测试精度范围从93.43% 到93.45%。(我们注意到，在某些情况下，准确性略有提高。)然后我们从模型中提取恶意软件并计算其SHA-1哈希。哈希保持不变。它表明该方法有效。</p>
+<ol start="2">
+<li>对于Q-II至Q-IV: </li>
+</ol>
+<p>对于问题II和III，我们使用样本1-6替换了FC.1层中的5,10,….4095神经元。在具有和不具有BN的AlexNet上的FC.0中，并记录了被替换模型的准确性。FC.0中的每个神经元可以嵌入18.75kb的恶意软件。由于一个样本最多可以替换FC.0和FC.1层中的5个神经元，因此我们用同一样本重复替换该层中的神经元，直到替换的神经元数量达到目标。最后，我们得到了6组精度数据，并分别计算了它们的平均值。</p>
+<p>可以发现，当替换较少数量的神经元时，模型的准确性几乎没有影响。对于带有BN的AlexNet，在FC.1中替换1025神经元 (25%) 时，准确性仍然可以达到93.63%，相当于嵌入了12MB的恶意软件。当替换2050神经元 (50%) 时，准确度是93.11% 的。当超过2105个神经元被替换时，准确度下降到93% 以下。当超过2900个神经元被替换时，准确度下降到90% 以下。此时，随着替换神经元的增加，准确性显着降低。当替换超过3290个神经元时，准确度下降到80% 以下。当所有神经元被替换时，准确度下降到10% 左右 (相当于随机猜测)。对于FC.0，当分别替换超过220、1060、1550神经元时，准确度下降到低于93% 、90% 、80%。</p>
+<p>结果可以回答问题II至IV。如果攻击者希望将模型的性能保持在1%的准确性损失内并嵌入更多的恶意软件，则在AlexNet上替换不超过2285个神经元，BN可以嵌入2285×12/1024=26.8mb的恶意软件。</p>
+<ol start="3">
+<li>对于Q-V: </li>
+</ol>
+<p>为了回答问题V，我们选择将恶意软件嵌入AlexNet的所有层。卷积层的参数比完全连接的层少得多。因此，不建议在卷积层中嵌入恶意软件。但是，为了选择最佳图层，我们仍然与所有图层进行了比较。我们使用样品替换每层中不同比例的神经元，并记录准确性。由于不同的层具有不同的参数，因此我们使用百分比来指示替换的数量。对于具有和不具有BN的AlexNet，FC.1在所有层中都具有出色的性能。可以推断，对于完全连接的层，更靠近输出层的层更适合嵌入。</p>
+<p><strong>B. Retraining</strong></p>
+<p>如果测试准确率大幅下降，攻击者可以重新训练模型以恢复性能。 基于CNN的模型使用反向传播来更新每个神经元中的参数。当一些神经元不需要更新时，可以将它们“冻结”（通过在 PyTorch中将“requires grad”属性设置为“false”），这样在反向传播的过程中会忽略里面的这些参数，从而保证嵌入式恶意软件保持不变。</p>
+<p>我们选择了性能与平均精度相似的样本，并在有和没有BN的模型中替换了FC.0和FC.1层中的 50、100、…、4050 个神经元。然后我们“冻结”恶意软件嵌入层并使用训练集重新训练模型一个时期。记录在培训前后的测试准确性。在对每个模型进行重新训练后，我们提取模型中嵌入的恶意软件并计算组装恶意软件的SHA-1哈希值，它们都与原始哈希值匹配。</p>
+<p>具有BN模型，并在FC.0层进行的准确率会提高。</p>
+<p>如果攻击者使用带有BN和重新训练的模型将恶意软件嵌入到FC.1上，并且希望将准确性损失保持在模型的1% 范围内，则可以替换3150多个神经元。它将导致3150 × 12/1024 = 36.9mb的恶意软件嵌入。如果攻击者希望将准确度保持在90% 以上，则可以替换3300神经元，嵌入38.7mb的恶意软件。</p>
+<h2 id="POSSIBLE-COUNTERMEASURES"><a href="#POSSIBLE-COUNTERMEASURES" class="headerlink" title="POSSIBLE COUNTERMEASURES"></a>POSSIBLE COUNTERMEASURES</h2><p>尽管恶意软件可以嵌入到DNN模型中，但仍有办法抵御此类攻击。首先恶意软件嵌入模型无法修改。对于专业人士来说，神经元的参数可以通过微调、修剪、模型压缩或其他操作来改变，从而打破恶意软件的结构，防止恶意软件正常恢复。然而，非专业用户仍可能面临此类攻击。其次，恶意软件嵌入模型的交付需要供应链污染等方法。如果用户从可信平台下载所需的模型并检查模型的完整性，影响也可以降低。最后，DNN模型市场还需要验证用户身份，以避免被恶意用户滥用。</p>
+<h2 id="CONCLUSION"><a href="#CONCLUSION" class="headerlink" title="CONCLUSION"></a>CONCLUSION</h2><p>本文提出了一种方法，可以通过神经网络模型隐蔽地、回避地传递恶意软件。当神经元被恶意软件字节替换时，模型的结构保持不变。由于恶意软件在神经元中被拆解，其特征不再可用，可以逃避常见反病毒引擎的检测。由于神经网络模型对变化具有鲁棒性，因此性能没有显着损失。实验表明，通过在全连接层上应用批归一化，一个 178MB-AlexNet模型可以在 1% 的准确率损失内嵌入 36.9MB 的恶意软件。 VirusTotal 的安全扫描也证明了嵌入恶意软件的模型可以逃避检测。 这篇论文证明了神经网络也可以被恶意使用。 随着人工智能的普及，人工智能辅助攻击将不断涌现，给计算机安全带来新的挑战。 网络攻防是相互依存的。 我们相信未来将应用针对人工智能辅助攻击的对策。 我们希望提议的方案将有助于未来的保护工作。</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>这种隐藏手段可以有效隐藏恶意软件，但当恶意软件执行时，还是需要考虑行为模式检测，需要进一步思考恶意软件的行为检测模式绕过。</p>
+]]></content>
+      <categories>
+        <category>论文</category>
       </categories>
       <tags>
         <tag>博客</tag>
@@ -936,6 +936,109 @@ x<span class="token operator">=</span><span class="token number">1</span>
       </tags>
   </entry>
   <entry>
+    <title>Web Cache Deception Escalates</title>
+    <url>/2022/10/07/web-cache-deception-escalates/</url>
+    <content><![CDATA[<h1 id="Web-Cache-Deception-Escalates"><a href="#Web-Cache-Deception-Escalates" class="headerlink" title="Web Cache Deception Escalates"></a>Web Cache Deception Escalates</h1><p>web Cache攻击前置知识：</p>
+<p><a href="https://websec.readthedocs.io/zh/latest/vuln/webcache.html">https://websec.readthedocs.io/zh/latest/vuln/webcache.html</a></p>
+<p>这种攻击类似于RPO（Relative Rath Overwrite）相对路径覆盖：</p>
+<p><a href="https://www.freebuf.com/articles/web/166731.html"></a></p>
+<p><a href="https://www.notion.so/HTTP-4aaae20b6d8141f390ad4834f6fb84d6">HTTPS请求走私</a>(HTTP request smuggling, HRS)</p>
+<p>主要影响的是CDN，负载均衡，反向代理</p>
+<h2 id="Usenix2022"><a href="#Usenix2022" class="headerlink" title="Usenix2022"></a>Usenix2022</h2><p>Web Cache Deception Escalates，原文地址如下:</p>
+<p><a href="https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari">https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari</a></p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>传统的WCD</p>
+<p>（Omer Gile blackhat 2017）</p>
+<p><a href="https://www.youtube.com/watch?v=mroq9eHFOIU">Web Cache Deception Attack</a></p>
+<p>（USENIX Security 2020 paper title “Cached and Confused: Web Cache Deception in the Wild”）具有两个局限性</p>
+<p><a href="https://securitygossip.com/blog/2020/04/07/cached-and-confused-web-cache-deception-in-the-wild/">Cached and Confused Web Cache Deception in the Wild - Group of Software Security In Progress</a></p>
+<p>1.It cannot probe websites that do not present avenues for marker injection or reﬂection.</p>
+<p>1.它不能探测那些没有标记注入或反射渠道的网站</p>
+<p>2.Marker setup is a burdensome process, making large-scale measurements infeasible.</p>
+<p>2.建立标记是一个繁琐的过程，似的大规模的标记不可行</p>
+<h2 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h2><p>传统的方法只能调查一些对身份验证后门保护的用户提供的个人信息的攻击，但这种方法的局限性在于：</p>
+<p>1.不能测试没有用户输入的页面，因为没有一个注入的途径。另外在不需要身份验证的页面中或者不支持创建用户的网站上，存在许多的安全信息（CSRF tokens，CSP nonces， OAuth state parameters）这种时候，现有的一些方法无法检测这些网站，因此更无法测试可能包含的WCD漏洞。</p>
+<p>2.给予标记的检测方法需要在每个测试的网站上去创建和填充用户账户，这是一个很大的工作量，会给实验带来很大的障碍。</p>
+<p>In this paper, we set out to propose a WCD detection methodology that is not hindered by the attack surface coverage and scalability limitations of the previous work. We subsequently aim to gain new insights into the severity and spread of WCD attacks.</p>
+<h3 id="新方法："><a href="#新方法：" class="headerlink" title="新方法："></a>新方法：</h3><p>使用内容相似度检查和启发式HTTP相应头来代替标记。这代表可以不用进行手动标记</p>
+<h3 id="贡献："><a href="#贡献：" class="headerlink" title="贡献："></a>贡献：</h3><ul>
+<li>We present a novel methodology DE to detect WCD vulnerabilities. DE addresses the coverage and scalability limitations of the state-of-the-art approach for detecting WCD in the wild.</li>
+<li>We conduct a comparative experiment on 404 websites, evaluating the pros and cons of   different WCD detection methodologies. We show that our approach DE significantly outperforms CC.</li>
+<li>We perform the largest-scale measurement experiment to date for detecting WCD in the wild, testing 10K websites. We identify 1188 vulnerable websites.</li>
+<li>We discuss case studies on real-life vulnerabilities impacting high-profile websites, presenting evidence for the first time that WCD attacks pose a serious threat beyond leaking personal information.</li>
+</ul>
+<h2 id="Cached-and-Confused-CC"><a href="#Cached-and-Confused-CC" class="headerlink" title="Cached and Confused(CC)"></a>Cached and Confused(CC)</h2><p>在USENIX Security 2020 的文章 “Cached and Confused: Web Cache Deception in the Wild”中提出的WCD检测方法如下：</p>
+<ol>
+<li>测试人员在网站上创建一个账户，并使用唯一标记填充用户可编辑的字段，这些字段通常包含个人或一些敏感信息</li>
+<li>带有有效身份验证Cookie的爬虫使用WCD漏洞测试网站的页面。此爬虫模拟登陆的受害者点击包含WCD payload的URL</li>
+<li>第二个爬虫不对站点进行身份验证，请求上一步中受害者的相同页面，此爬虫模拟攻击者探测成功的漏洞。如果响应中包含标记，则上一步中的漏洞之一被成功的将缓存存到存储页中，将信息暴露给未经身份验证的请求</li>
+</ol>
+<p>CC的限制：当被测试的页面不反应用户输入（标记）时CC对网站的缓存不具有可见性。甚至一些网站可能不存在标记注入的途径。因此CC是放弃了一些检测漏洞的机会，以确保在有标记的页面上获得更可靠的结果。</p>
+<h2 id="Author-Motivation-amp-Goals"><a href="#Author-Motivation-amp-Goals" class="headerlink" title="Author Motivation &amp; Goals"></a>Author Motivation &amp; Goals</h2><p>本篇文章主要研究之前的局限性。提出了一种新的检测方法：Web Cache Deception Escalates(DE)，这种方法主要解决了以下限制：</p>
+<ol>
+<li>覆盖问题(Coverage Problem)。CC不能测试不反映标记的网页</li>
+<li>可扩展性问题(Scalability Problem)。CC需要手动创建账户，标记等一系列的先决条件，人工成本较大</li>
+</ol>
+<p>Q1: DE方法如何实现，与CC方法的相对表现如何？</p>
+<p>Q2:将测量范围扩大到10K网站将如何改变我们对WCD的既定理解？</p>
+<p>Q3:WCD除了泄漏个人信息外还有什么？错误的缓存其他类型的敏感数据，特别是在那些公共页面上发现的不受身份验证保护的数据是否可行？</p>
+<p>Web cache poisoning</p>
+<p>a set of such attacks on popular caching proxies , and more recently introduced more advanced attacks exploiting the cache key construction mechanisms used by these technologies</p>
+<p>Nguyen et al. proposed a different take on cache poisoning, employing erroneous negative caching (i.e., caching of error responses) as a means to block access to websites, resulting in a denial-of-service attack</p>
+<p>目前还没有普遍适用的缓存攻击或检测防御</p>
+<h2 id="Methodology"><a href="#Methodology" class="headerlink" title="Methodology"></a>Methodology</h2><p>DE使用内容相似度检查和标题检查相结合来克服CC的局限性。但是DE可能不如CC直观</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.07.18.png" alt="截屏2022-09-11 17.07.18.png"></p>
+<h3 id="step-1-检查URL是否返回动态内容？"><a href="#step-1-检查URL是否返回动态内容？" class="headerlink" title="step 1 检查URL是否返回动态内容？"></a>step 1 检查URL是否返回动态内容？</h3><p>WCD的前提是诱使缓存存储动态生成的内容，因为静态页面不太可能包含敏感数据。因此，作为第一步，我们请求两次URL，每一次都有一个新的客户机状态，并比较响应。如果结果相同，我们认为这是一个静态页面，终止程序，否则进行step 2</p>
+<h3 id="step-2-当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？"><a href="#step-2-当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？" class="headerlink" title="step 2 当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？"></a>step 2 当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？</h3><p>step2是通过使用WCD有效负载修改输入URL来创建攻击URL，并请求它来发起WCD攻击。</p>
+<ol>
+<li>向URL去追加一个PATH组件，它指向一个不存在的样式表。我们将文件名随机化，以防止Internet用户无意间访问相同的URL并获取中毒的缓存内容。作者在payload中仍然使用了CSS扩展。（虽然其他静态文件扩展名也可以工作，但是几乎所有网站都存在样式表，这使它成为了WCD攻击的首选）</li>
+<li>通过请求这个URL，模拟受害者访问该链接，进行WCD尝试。这里主要考虑的问题是确保服务器仍然用动态内容相应请求。eg：如果攻击失败，服务器一般会返回错误页（404，400）。为了解决这个问题，作者生成两个具有随机有效负载的唯一攻击URL，发起两次攻击（6，7）行并比较结果（第8行），如果结果相同，则表示攻击失败，终止测试。</li>
+</ol>
+<h3 id="step-3-攻击URL的源相应是否可缓存"><a href="#step-3-攻击URL的源相应是否可缓存" class="headerlink" title="step 3 攻击URL的源相应是否可缓存"></a>step 3 攻击URL的源相应是否可缓存</h3><p>WCD想要成功，源服务器必须提供一个错误的缓存的动态响应。进一步说，但对相同攻击的URL的进一步请求必须从缓存中提供。</p>
+<p>在最后一步中，我们通过检查首次访问攻击URL时返回的HTTP相应（第6行）和对同一URL的重复请求的响应（第9行）来精确执行此检查。具体来说就是执行了两次检查。首先我们使用HTTP相应头启发式来验证初始请求时缓存但未命中（它是由原始请求提供的），但后一个请求是缓存命中（第8行和第10行）接下来比较响应体，已验证这两个请求是否相同（第10行第一个条件），主要是保证正确性。</p>
+<h2 id="Interpreting-the-Results"><a href="#Interpreting-the-Results" class="headerlink" title="Interpreting the Results"></a>Interpreting the Results</h2><p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.36.15.png" alt="截屏2022-09-11 17.36.15.png"></p>
+<p>不一定必须是用户的标记，在一些非敏感页面，包括一些日期，服务器响应时间或电子邮件混淆字符串的动态部分</p>
+<p>但是，动态页面也有可能会被网站管理员配置为可缓存。即使正常请求时，页面也可能会被缓存，而不会收到WCD攻击。这可能是由于一些服务器的优化。例如，可以允许一些不敏感的动态对象中从缓存提供服务，例如一个短TTL，即使他已经超时了。</p>
+<p>DE相比于CC的一个优势是他可以进行假阳性的自动识别和删除，而不需要人工分析</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.43.24.png" alt="截屏2022-09-11 17.43.24.png"></p>
+<p>将每一个URL都视为易受攻击，通常会请求它两次，而不使用WCD邮箱负载，并用相同的请求头来测试第二个响应是否来自缓存。缓存命中意味着在没有攻击时URL仍然被缓存，因此是假阳性。</p>
+<h2 id="DE-with-Authentication"><a href="#DE-with-Authentication" class="headerlink" title="DE with Authentication"></a>DE with Authentication</h2><p>DE不能访问身份验证后的页面，而CC是专门用来测试这些页面。为了研究协议变化和认证状态对WCD检测效率的影响，引入了第三种方法，称为 $DE_{auth}$</p>
+<p>$DE_{auth}$是DE和CC的混合方法。核心使用了新的监测方案，但和CC一样需要手动创建账户，在算法1的6，7行使用有效身份验证的cookie，模拟登录的受害者点击恶意链接。</p>
+<h2 id="The-Experiment"><a href="#The-Experiment" class="headerlink" title="The Experiment"></a>The Experiment</h2><p>在每个FQDN上测试了500个url，使用不同的WCD payload，用12个attack url 测试每个页面，4种路径混淆技术，提出了利用URL编码差异进一步设计了7个新的编码技巧。</p>
+<p>在Alexa Top 100k中提取了404个网站爬行池，选择这些目标是由于CC的标记要求限制，遵循了Cached and Confused中描述的协议。</p>
+<ol>
+<li>抓取Alexa Top 100K 的首页，通过搜索包含关键词（如登录注册）和OAuth &amp; OpenID链接参数</li>
+<li>手动过滤需要敏感凭据的网站，如需要银行账户或社会安全码来创建账户</li>
+<li>得到404个网站，在上面创建账户并标记注入用户的可编辑字段，并为每个字段收集了CC和$DE_{auth}$使用的cookie</li>
+</ol>
+<p>这个过程一定会产生一个和CC编码相同的数据集，但对分析没有实质性的影响</p>
+<p>实践中，爬虫经常会在每个目标网站上发现多个易受攻击的URL，但是如果不对每个发现进行手动分析，我们就无法准确的确定这些漏洞是否真正源于不同的缓存配置问题，或者不同的URL是否实际上对应唯一的页面</p>
+<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>在404个网站中检测到了123个易受WCD攻击的网站</p>
+<p>通过实验我们发现之前CC的限制，尽管数据集已经很偏向必须支持标记注入的网站，但许多其他易受攻击的页面没有反映这些标记。事实上CC只能测试244/404个网站，结果CC在我们的实验中只识别了18个易受攻击的网站，而$DE_{auth}$和DE分别识别了115和104个。 $DE_{auth}$的表现更好一些。</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_19.57.51.png" alt="截屏2022-09-11 19.57.51.png"></p>
+<p>如作者所预料，$DE_{auth}$和DE的差异正式由于身份验证导致的。例如手动确认$DE_{auth}$检测到的目标网站上有漏洞的计费设置页面，但在测试相同URL时，DE被重定向到安全登录页面。同样，CC发现了7个由于访问了经过身份验证页面而DE未检测到的漏洞。另外CC捕获到了两个独特的漏洞，即使是$DE_{auth}$也漏掉了这两个漏洞。证实其中一个案例是由于目标网站没有返回缓存状态头而失败。</p>
+<p>最后$DE_{auth}$发现了5个独特的漏洞，都是没有经过身份验证的，经过验证这些情况是由于网站在向请求附加cookie时显示发送阻止缓存的缓存控制头，或悄悄忽略了所有缓存指令</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_20.18.47.png" alt="截屏2022-09-11 20.18.47.png"></p>
+<p>CC的误报：一个网站如果公开列出了他最近的访问者，其中一个是我们标记的用户名，将会误报</p>
+<p>DE是大规模检测的唯一可行选择，具有良好的检测性能和零设置开销。</p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_21.05.37.png" alt="截屏2022-09-11 21.05.37.png"></p>
+<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_21.06.50.png" alt="截屏2022-09-11 21.06.50.png"></p>
+<p>WCD+XSS可能导致前置缓存将响应与XSS payload一起存储，这会将攻击升级到stored XSS，此时注入的恶意payload将自动从缓存提供给访问网站的客户端</p>
+<h3 id="供应链攻击"><a href="#供应链攻击" class="headerlink" title="供应链攻击"></a>供应链攻击</h3><p>供应链攻击不局限于传统的恶意代码包含，单个具有缓存风险的易受攻击的在线服务提供商可能将许多网站暴露在互联网上导致WCD攻击，在结果中发现了大量的易受攻击的URL，它们共享相同的子域和相似的路径组件（eg: support.example.com/common-pattern）经过人工检查，确定这些页面是与流行的客户服务和支持管理平台的集成点。由于供应商平台存在WCD漏洞，他们许多客户也在各自的域下受到影响。在1188个网站中有399个明确表示受到该漏洞的影响。</p>
+<p>WCD攻击不能升级为破坏性攻击的原因：</p>
+<p>充分分析了24个网站，但没有对攻击者有价值的数据。另外是个网站不允许探索整个应用程序，要么不允许建立公共账户，要么需要私人信息来进行。只有三个网站泄漏了敏感令牌但这本身并不构成重大威胁。例如CSRF攻击由于对推荐人检查和验证码的分层防御被阻止，CSP nonce泄漏因为没有XSS漏洞而无法利用。2个网站通过浏览器端的API提取敏感数据，因此没有缓存任何损坏。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><strong>Browser-Powered Desync Attacks: A New Frontier in HTTP Request Smuggling</strong></p>
+<p>blackhat 2022</p>
+<p><a href="https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414">https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414</a></p>
+]]></content>
+      <categories>
+        <category>论文</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Shiro-550</title>
     <url>/2022/10/07/shiro-550/</url>
     <content><![CDATA[<h1 id="Shiro-550"><a href="#Shiro-550" class="headerlink" title="Shiro-550"></a>Shiro-550</h1><h2 id="0x1-前言"><a href="#0x1-前言" class="headerlink" title="0x1 前言"></a>0x1 前言</h2><p>Shiro攻击payload经过AES加密，很多防护设备无法识别/拦截攻击</p>
@@ -1225,109 +1328,6 @@ def <span class="token function">dnslog</span><span class="token punctuation">(<
 ]]></content>
       <categories>
         <category>Java代码审计</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Web Cache Deception Escalates</title>
-    <url>/2022/10/07/web-cache-deception-escalates/</url>
-    <content><![CDATA[<h1 id="Web-Cache-Deception-Escalates"><a href="#Web-Cache-Deception-Escalates" class="headerlink" title="Web Cache Deception Escalates"></a>Web Cache Deception Escalates</h1><p>web Cache攻击前置知识：</p>
-<p><a href="https://websec.readthedocs.io/zh/latest/vuln/webcache.html">https://websec.readthedocs.io/zh/latest/vuln/webcache.html</a></p>
-<p>这种攻击类似于RPO（Relative Rath Overwrite）相对路径覆盖：</p>
-<p><a href="https://www.freebuf.com/articles/web/166731.html"></a></p>
-<p><a href="https://www.notion.so/HTTP-4aaae20b6d8141f390ad4834f6fb84d6">HTTPS请求走私</a>(HTTP request smuggling, HRS)</p>
-<p>主要影响的是CDN，负载均衡，反向代理</p>
-<h2 id="Usenix2022"><a href="#Usenix2022" class="headerlink" title="Usenix2022"></a>Usenix2022</h2><p>Web Cache Deception Escalates，原文地址如下:</p>
-<p><a href="https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari">https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari</a></p>
-<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>传统的WCD</p>
-<p>（Omer Gile blackhat 2017）</p>
-<p><a href="https://www.youtube.com/watch?v=mroq9eHFOIU">Web Cache Deception Attack</a></p>
-<p>（USENIX Security 2020 paper title “Cached and Confused: Web Cache Deception in the Wild”）具有两个局限性</p>
-<p><a href="https://securitygossip.com/blog/2020/04/07/cached-and-confused-web-cache-deception-in-the-wild/">Cached and Confused Web Cache Deception in the Wild - Group of Software Security In Progress</a></p>
-<p>1.It cannot probe websites that do not present avenues for marker injection or reﬂection.</p>
-<p>1.它不能探测那些没有标记注入或反射渠道的网站</p>
-<p>2.Marker setup is a burdensome process, making large-scale measurements infeasible.</p>
-<p>2.建立标记是一个繁琐的过程，似的大规模的标记不可行</p>
-<h2 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h2><p>传统的方法只能调查一些对身份验证后门保护的用户提供的个人信息的攻击，但这种方法的局限性在于：</p>
-<p>1.不能测试没有用户输入的页面，因为没有一个注入的途径。另外在不需要身份验证的页面中或者不支持创建用户的网站上，存在许多的安全信息（CSRF tokens，CSP nonces， OAuth state parameters）这种时候，现有的一些方法无法检测这些网站，因此更无法测试可能包含的WCD漏洞。</p>
-<p>2.给予标记的检测方法需要在每个测试的网站上去创建和填充用户账户，这是一个很大的工作量，会给实验带来很大的障碍。</p>
-<p>In this paper, we set out to propose a WCD detection methodology that is not hindered by the attack surface coverage and scalability limitations of the previous work. We subsequently aim to gain new insights into the severity and spread of WCD attacks.</p>
-<h3 id="新方法："><a href="#新方法：" class="headerlink" title="新方法："></a>新方法：</h3><p>使用内容相似度检查和启发式HTTP相应头来代替标记。这代表可以不用进行手动标记</p>
-<h3 id="贡献："><a href="#贡献：" class="headerlink" title="贡献："></a>贡献：</h3><ul>
-<li>We present a novel methodology DE to detect WCD vulnerabilities. DE addresses the coverage and scalability limitations of the state-of-the-art approach for detecting WCD in the wild.</li>
-<li>We conduct a comparative experiment on 404 websites, evaluating the pros and cons of   different WCD detection methodologies. We show that our approach DE significantly outperforms CC.</li>
-<li>We perform the largest-scale measurement experiment to date for detecting WCD in the wild, testing 10K websites. We identify 1188 vulnerable websites.</li>
-<li>We discuss case studies on real-life vulnerabilities impacting high-profile websites, presenting evidence for the first time that WCD attacks pose a serious threat beyond leaking personal information.</li>
-</ul>
-<h2 id="Cached-and-Confused-CC"><a href="#Cached-and-Confused-CC" class="headerlink" title="Cached and Confused(CC)"></a>Cached and Confused(CC)</h2><p>在USENIX Security 2020 的文章 “Cached and Confused: Web Cache Deception in the Wild”中提出的WCD检测方法如下：</p>
-<ol>
-<li>测试人员在网站上创建一个账户，并使用唯一标记填充用户可编辑的字段，这些字段通常包含个人或一些敏感信息</li>
-<li>带有有效身份验证Cookie的爬虫使用WCD漏洞测试网站的页面。此爬虫模拟登陆的受害者点击包含WCD payload的URL</li>
-<li>第二个爬虫不对站点进行身份验证，请求上一步中受害者的相同页面，此爬虫模拟攻击者探测成功的漏洞。如果响应中包含标记，则上一步中的漏洞之一被成功的将缓存存到存储页中，将信息暴露给未经身份验证的请求</li>
-</ol>
-<p>CC的限制：当被测试的页面不反应用户输入（标记）时CC对网站的缓存不具有可见性。甚至一些网站可能不存在标记注入的途径。因此CC是放弃了一些检测漏洞的机会，以确保在有标记的页面上获得更可靠的结果。</p>
-<h2 id="Author-Motivation-amp-Goals"><a href="#Author-Motivation-amp-Goals" class="headerlink" title="Author Motivation &amp; Goals"></a>Author Motivation &amp; Goals</h2><p>本篇文章主要研究之前的局限性。提出了一种新的检测方法：Web Cache Deception Escalates(DE)，这种方法主要解决了以下限制：</p>
-<ol>
-<li>覆盖问题(Coverage Problem)。CC不能测试不反映标记的网页</li>
-<li>可扩展性问题(Scalability Problem)。CC需要手动创建账户，标记等一系列的先决条件，人工成本较大</li>
-</ol>
-<p>Q1: DE方法如何实现，与CC方法的相对表现如何？</p>
-<p>Q2:将测量范围扩大到10K网站将如何改变我们对WCD的既定理解？</p>
-<p>Q3:WCD除了泄漏个人信息外还有什么？错误的缓存其他类型的敏感数据，特别是在那些公共页面上发现的不受身份验证保护的数据是否可行？</p>
-<p>Web cache poisoning</p>
-<p>a set of such attacks on popular caching proxies , and more recently introduced more advanced attacks exploiting the cache key construction mechanisms used by these technologies</p>
-<p>Nguyen et al. proposed a different take on cache poisoning, employing erroneous negative caching (i.e., caching of error responses) as a means to block access to websites, resulting in a denial-of-service attack</p>
-<p>目前还没有普遍适用的缓存攻击或检测防御</p>
-<h2 id="Methodology"><a href="#Methodology" class="headerlink" title="Methodology"></a>Methodology</h2><p>DE使用内容相似度检查和标题检查相结合来克服CC的局限性。但是DE可能不如CC直观</p>
-<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.07.18.png" alt="截屏2022-09-11 17.07.18.png"></p>
-<h3 id="step-1-检查URL是否返回动态内容？"><a href="#step-1-检查URL是否返回动态内容？" class="headerlink" title="step 1 检查URL是否返回动态内容？"></a>step 1 检查URL是否返回动态内容？</h3><p>WCD的前提是诱使缓存存储动态生成的内容，因为静态页面不太可能包含敏感数据。因此，作为第一步，我们请求两次URL，每一次都有一个新的客户机状态，并比较响应。如果结果相同，我们认为这是一个静态页面，终止程序，否则进行step 2</p>
-<h3 id="step-2-当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？"><a href="#step-2-当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？" class="headerlink" title="step 2 当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？"></a>step 2 当我们发起WCD攻击时，服务器是否仍然以动态内容进行相应？</h3><p>step2是通过使用WCD有效负载修改输入URL来创建攻击URL，并请求它来发起WCD攻击。</p>
-<ol>
-<li>向URL去追加一个PATH组件，它指向一个不存在的样式表。我们将文件名随机化，以防止Internet用户无意间访问相同的URL并获取中毒的缓存内容。作者在payload中仍然使用了CSS扩展。（虽然其他静态文件扩展名也可以工作，但是几乎所有网站都存在样式表，这使它成为了WCD攻击的首选）</li>
-<li>通过请求这个URL，模拟受害者访问该链接，进行WCD尝试。这里主要考虑的问题是确保服务器仍然用动态内容相应请求。eg：如果攻击失败，服务器一般会返回错误页（404，400）。为了解决这个问题，作者生成两个具有随机有效负载的唯一攻击URL，发起两次攻击（6，7）行并比较结果（第8行），如果结果相同，则表示攻击失败，终止测试。</li>
-</ol>
-<h3 id="step-3-攻击URL的源相应是否可缓存"><a href="#step-3-攻击URL的源相应是否可缓存" class="headerlink" title="step 3 攻击URL的源相应是否可缓存"></a>step 3 攻击URL的源相应是否可缓存</h3><p>WCD想要成功，源服务器必须提供一个错误的缓存的动态响应。进一步说，但对相同攻击的URL的进一步请求必须从缓存中提供。</p>
-<p>在最后一步中，我们通过检查首次访问攻击URL时返回的HTTP相应（第6行）和对同一URL的重复请求的响应（第9行）来精确执行此检查。具体来说就是执行了两次检查。首先我们使用HTTP相应头启发式来验证初始请求时缓存但未命中（它是由原始请求提供的），但后一个请求是缓存命中（第8行和第10行）接下来比较响应体，已验证这两个请求是否相同（第10行第一个条件），主要是保证正确性。</p>
-<h2 id="Interpreting-the-Results"><a href="#Interpreting-the-Results" class="headerlink" title="Interpreting the Results"></a>Interpreting the Results</h2><p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.36.15.png" alt="截屏2022-09-11 17.36.15.png"></p>
-<p>不一定必须是用户的标记，在一些非敏感页面，包括一些日期，服务器响应时间或电子邮件混淆字符串的动态部分</p>
-<p>但是，动态页面也有可能会被网站管理员配置为可缓存。即使正常请求时，页面也可能会被缓存，而不会收到WCD攻击。这可能是由于一些服务器的优化。例如，可以允许一些不敏感的动态对象中从缓存提供服务，例如一个短TTL，即使他已经超时了。</p>
-<p>DE相比于CC的一个优势是他可以进行假阳性的自动识别和删除，而不需要人工分析</p>
-<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_17.43.24.png" alt="截屏2022-09-11 17.43.24.png"></p>
-<p>将每一个URL都视为易受攻击，通常会请求它两次，而不使用WCD邮箱负载，并用相同的请求头来测试第二个响应是否来自缓存。缓存命中意味着在没有攻击时URL仍然被缓存，因此是假阳性。</p>
-<h2 id="DE-with-Authentication"><a href="#DE-with-Authentication" class="headerlink" title="DE with Authentication"></a>DE with Authentication</h2><p>DE不能访问身份验证后的页面，而CC是专门用来测试这些页面。为了研究协议变化和认证状态对WCD检测效率的影响，引入了第三种方法，称为 $DE_{auth}$</p>
-<p>$DE_{auth}$是DE和CC的混合方法。核心使用了新的监测方案，但和CC一样需要手动创建账户，在算法1的6，7行使用有效身份验证的cookie，模拟登录的受害者点击恶意链接。</p>
-<h2 id="The-Experiment"><a href="#The-Experiment" class="headerlink" title="The Experiment"></a>The Experiment</h2><p>在每个FQDN上测试了500个url，使用不同的WCD payload，用12个attack url 测试每个页面，4种路径混淆技术，提出了利用URL编码差异进一步设计了7个新的编码技巧。</p>
-<p>在Alexa Top 100k中提取了404个网站爬行池，选择这些目标是由于CC的标记要求限制，遵循了Cached and Confused中描述的协议。</p>
-<ol>
-<li>抓取Alexa Top 100K 的首页，通过搜索包含关键词（如登录注册）和OAuth &amp; OpenID链接参数</li>
-<li>手动过滤需要敏感凭据的网站，如需要银行账户或社会安全码来创建账户</li>
-<li>得到404个网站，在上面创建账户并标记注入用户的可编辑字段，并为每个字段收集了CC和$DE_{auth}$使用的cookie</li>
-</ol>
-<p>这个过程一定会产生一个和CC编码相同的数据集，但对分析没有实质性的影响</p>
-<p>实践中，爬虫经常会在每个目标网站上发现多个易受攻击的URL，但是如果不对每个发现进行手动分析，我们就无法准确的确定这些漏洞是否真正源于不同的缓存配置问题，或者不同的URL是否实际上对应唯一的页面</p>
-<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>在404个网站中检测到了123个易受WCD攻击的网站</p>
-<p>通过实验我们发现之前CC的限制，尽管数据集已经很偏向必须支持标记注入的网站，但许多其他易受攻击的页面没有反映这些标记。事实上CC只能测试244/404个网站，结果CC在我们的实验中只识别了18个易受攻击的网站，而$DE_{auth}$和DE分别识别了115和104个。 $DE_{auth}$的表现更好一些。</p>
-<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_19.57.51.png" alt="截屏2022-09-11 19.57.51.png"></p>
-<p>如作者所预料，$DE_{auth}$和DE的差异正式由于身份验证导致的。例如手动确认$DE_{auth}$检测到的目标网站上有漏洞的计费设置页面，但在测试相同URL时，DE被重定向到安全登录页面。同样，CC发现了7个由于访问了经过身份验证页面而DE未检测到的漏洞。另外CC捕获到了两个独特的漏洞，即使是$DE_{auth}$也漏掉了这两个漏洞。证实其中一个案例是由于目标网站没有返回缓存状态头而失败。</p>
-<p>最后$DE_{auth}$发现了5个独特的漏洞，都是没有经过身份验证的，经过验证这些情况是由于网站在向请求附加cookie时显示发送阻止缓存的缓存控制头，或悄悄忽略了所有缓存指令</p>
-<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_20.18.47.png" alt="截屏2022-09-11 20.18.47.png"></p>
-<p>CC的误报：一个网站如果公开列出了他最近的访问者，其中一个是我们标记的用户名，将会误报</p>
-<p>DE是大规模检测的唯一可行选择，具有良好的检测性能和零设置开销。</p>
-<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_21.05.37.png" alt="截屏2022-09-11 21.05.37.png"></p>
-<p><img src="/2022/10/07/web-cache-deception-escalates/%25E6%2588%25AA%25E5%25B1%258F2022-09-11_21.06.50.png" alt="截屏2022-09-11 21.06.50.png"></p>
-<p>WCD+XSS可能导致前置缓存将响应与XSS payload一起存储，这会将攻击升级到stored XSS，此时注入的恶意payload将自动从缓存提供给访问网站的客户端</p>
-<h3 id="供应链攻击"><a href="#供应链攻击" class="headerlink" title="供应链攻击"></a>供应链攻击</h3><p>供应链攻击不局限于传统的恶意代码包含，单个具有缓存风险的易受攻击的在线服务提供商可能将许多网站暴露在互联网上导致WCD攻击，在结果中发现了大量的易受攻击的URL，它们共享相同的子域和相似的路径组件（eg: support.example.com/common-pattern）经过人工检查，确定这些页面是与流行的客户服务和支持管理平台的集成点。由于供应商平台存在WCD漏洞，他们许多客户也在各自的域下受到影响。在1188个网站中有399个明确表示受到该漏洞的影响。</p>
-<p>WCD攻击不能升级为破坏性攻击的原因：</p>
-<p>充分分析了24个网站，但没有对攻击者有价值的数据。另外是个网站不允许探索整个应用程序，要么不允许建立公共账户，要么需要私人信息来进行。只有三个网站泄漏了敏感令牌但这本身并不构成重大威胁。例如CSRF攻击由于对推荐人检查和验证码的分层防御被阻止，CSP nonce泄漏因为没有XSS漏洞而无法利用。2个网站通过浏览器端的API提取敏感数据，因此没有缓存任何损坏。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><strong>Browser-Powered Desync Attacks: A New Frontier in HTTP Request Smuggling</strong></p>
-<p>blackhat 2022</p>
-<p><a href="https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414">https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414</a></p>
-]]></content>
-      <categories>
-        <category>论文</category>
       </categories>
       <tags>
         <tag>博客</tag>
